@@ -1,5 +1,9 @@
-Revision history for Perl extension Foo.
+Revision history for Perl module URI::Find.
 
-0.01  Wed May 12 12:43:43 1999
-    - original version; created by h2xs 1.19
+0.02  Tue Feb  1 13:11:56 EST 2000
+    - Added heuristic to handle 'URL:http://www.foo.com'
+    - Added heuristic to handle trailing quotes.
+
+0.01  Mon Jan 31 19:12:23 EST 2000
+    * First working version released to CPAN.
 

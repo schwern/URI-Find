@@ -3,3 +3,5 @@ MANIFEST
 Makefile.PL
 t/Find.t
 lib/URI/Find.pm
+INSTALL
+README

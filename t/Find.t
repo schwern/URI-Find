@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-# $Id: Find.t,v 1.8 2001/07/27 12:41:42 roderick Exp $
+# $Id: Find.t,v 1.9 2002/07/01 14:46:19 roderick Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -22,6 +22,8 @@ BEGIN { $Total_tests++ }
 ok(1, 'compile');
 
 ######################### End of black magic.
+
+my $No_joined = @ARGV && $ARGV[0] eq '--no-joined' ? shift : 0;
 
 sub ok {
     my($test, $name) = @_;
@@ -94,12 +96,12 @@ BEGIN {
     %Tests = (
           '<URL:http://www.perl.com>' => 'http://www.perl.com/',
           '<ftp://ftp.site.org>'      => 'ftp://ftp.site.org',
-          '<ftp.site.org>'            => 'ftp://ftp.site.org',
+          '<ftp.site.org>'            => [[ S => 'ftp://ftp.site.org' ]],
           'Make sure "http://www.foo.com" is caught' =>
                 'http://www.foo.com/',
           'http://www.foo.com'  => 'http://www.foo.com/',
-          'www.foo.com'         => 'http://www.foo.com/',
-          'ftp.foo.com'         => 'ftp://ftp.foo.com',
+          'www.foo.com'         => [[ S => 'http://www.foo.com/' ]],
+          'ftp.foo.com'         => [[ S => 'ftp://ftp.foo.com' ]],
           'gopher://moo.foo.com'        => 'gopher://moo.foo.com',
           'I saw this site, http://www.foo.com, and its really neat!'
               => 'http://www.foo.com/',
@@ -130,7 +132,7 @@ BEGIN {
 	      => [[S => 'http://mail.eserv.com.au/']],
 	  'foo.info/himom ftp.bar.biz'
 	      => [[S => 'http://foo.info/himom'],
-		  [$all => 'ftp://ftp.bar.biz']],
+		  [S => 'ftp://ftp.bar.biz']],
 
 	  # False tests
 	  'HTTP::Request::Common'			=> [],
@@ -142,6 +144,7 @@ BEGIN {
 	  'hi Foo.pm Foo.pl mom'			=> [],
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
+	  'www.marselisl www.info@skive-hallerne.dk'	=> [],
     );
 
     # Convert plain string values to a list of 1 spec which indicates
@@ -151,7 +154,8 @@ BEGIN {
     }
 
     # Run everything together as one big test.
-    $Tests{join "\n", keys %Tests} = [map { @$_ } values %Tests];
+    $Tests{join "\n", keys %Tests} = [map { @$_ } values %Tests]
+	unless $No_joined;
 
     # Each test yields 3 tests for each finder (return value matches
     # number returned, matches equal expected matches, text was not

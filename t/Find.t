@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-# $Id: Find.t,v 1.10 2004/10/09 12:20:08 roderick Exp $
+# $Id: Find.t,v 1.11 2005/03/22 16:03:12 roderick Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -141,6 +141,8 @@ BEGIN {
 	  '[square.com]'         => [[S => 'http://square.com/' ]],
 	  '{brace.com}'          => [[S => 'http://brace.com/'  ]],
 	  '<angle.com>'          => [[S => 'http://angle.com/'  ]],
+	  '<x>intag.com</x>'     => [[S => 'http://intag.com/'  ]],
+	  '[mailto:somebody@company.ext]' => 'mailto:somebody@company.ext',
 
 	  # False tests
 	  'HTTP::Request::Common'			=> [],
@@ -153,6 +155,7 @@ BEGIN {
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
 	  'www.marselisl www.info@skive-hallerne.dk'	=> [],
+# XXX broken
 #	  q{$url = 'http://'.rand(1000000).'@anonymizer.com/'.$url;}
 #							=> [],
     );
@@ -228,4 +231,15 @@ sub run {
 
 while( my($text, $rspec_list) = each %Tests ) {
     run $text, @$rspec_list;
+}
+
+# We used to turn URI::URL strict on and leave it on.
+
+BEGIN { $Total_tests += 2 }
+for my $val (0, 1) {
+    URI::URL::strict($val);
+    my $f = URI::Find->new(sub { });
+    my $t = "foo";
+    $f->find(\$t);
+    ok $val == URI::URL::strict, "URI::URL::strict $val";
 }

@@ -1,4 +1,4 @@
-# $Id: Find.pm,v 1.14 2004/10/11 14:23:26 roderick Exp $
+# $Id: Find.pm,v 1.15 2005/03/22 16:03:09 roderick Exp $
 #
 # Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
 # program is free software; you can redistribute it and/or modify it
@@ -11,12 +11,14 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.14';
-@EXPORT = qw(find_uris);
+
+$VERSION	= '0.15';
+@EXPORT		= qw(find_uris);
 
 use constant YES => (1==1);
 use constant NO  => !YES;
 
+use Carp	qw(croak);
 use URI::URL;
 
 require URI;
@@ -32,8 +34,6 @@ $uricCheat =~ tr/://d;
 # Identifying characters accidentally picked up with a URI.
 my($cruftSet) = q{]),.'";}; #'#
 
-
-=pod
 
 =head1 NAME
 
@@ -57,6 +57,10 @@ to be.)  It only finds URIs which include a scheme (http:// or the
 like), for something a bit less strict have a look at
 L<URI::Find::Schemeless|URI::Find::Schemeless>.
 
+For a command-line interface, see Darren Chamberlain's C<urifind>
+script.  It's available from his CPAN directory,
+L<http://www.cpan.org/authors/id/D/DA/DARREN/>.
+
 =head2 Public Methods
 
 =over 4
@@ -76,6 +80,7 @@ text.
 =cut
 
 sub new {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($proto, $callback) = @_;
     my($class) = ref $proto || $proto;
     my $self = bless {}, $class;
@@ -84,8 +89,6 @@ sub new {
 
     return $self;
 }
-
-=pod
 
 =item B<find>
 
@@ -96,12 +99,13 @@ $text is a string to search and possibly modify with your callback.
 =cut
 
 sub find {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $r_text) = @_;
 
     my $urlsfound = 0;
 
     # Don't assume http.
-    URI::URL::strict(1);
+    my $old_strict = URI::URL::strict(1);
 
     # Yes, evil.  Basically, look for something vaguely resembling a URL,
     # then hand it off to URI::URL for examination.  If it passes, throw
@@ -135,12 +139,11 @@ sub find {
         }
     }eg;
 
+    URI::URL::strict($old_strict);
     return $urlsfound;
 }
 
 =back
-
-=pod
 
 =head2 Protected Methods
 
@@ -170,20 +173,19 @@ Usually this method does not have to be overridden.
 =cut
 
 sub uri_re {
+    @_ == 1 || __PACKAGE__->badinvo;
     my($self) = shift;
     return sprintf '%s:[%s][%s#]*', $schemeRe,
                                     $uricCheat,
                                     $self->uric_set;
 }
 
-=pod
-
 =item B<schemeless_uri_re>
 
   my $schemeless_re = $self->schemeless_uri_re;
 
 Returns the regex for finding schemeless URIs (www.foo.com and such) and
-other things which might be URIs.  By default this will match othing
+other things which might be URIs.  By default this will match nothing
 (though it used to try to find schemeless URIs which started with C<www>
 and C<ftp>).
 
@@ -194,11 +196,10 @@ the scheme.
 =cut
 
 sub schemeless_uri_re {
+    @_ == 1 || __PACKAGE__->badinvo;
     my($self) = shift;
     return qr/\b\B/; # match nothing
 }
-
-=pod
 
 =item B<uric_set>
 
@@ -212,10 +213,9 @@ You almost never have to override this.
 =cut
 
 sub uric_set {
+    @_ == 1 || __PACKAGE__->badinvo;
     return $uricSet;
 }
-
-=pod
 
 =item B<cruft_set>
 
@@ -227,11 +227,9 @@ decruft().
 =cut
 
 sub cruft_set {
+    @_ == 1 || __PACKAGE__->badinvo;
     return $cruftSet;
 }
-
-=pod
-
 
 =item B<decruft>
 
@@ -247,6 +245,7 @@ This method takes a candidate URI and strips off any cruft it finds.
 =cut
 
 sub decruft {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $orig_match) = @_;
 
     $self->{start_cruft} = '';
@@ -258,8 +257,6 @@ sub decruft {
 
     return $orig_match;
 }
-
-=pod
 
 =item B<recruft>
 
@@ -274,12 +271,11 @@ the user's callback, so it has to be put back afterwards.
 #'#
 
 sub recruft {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $uri) = @_;
 
     return $self->{start_cruft} . $uri . $self->{end_cruft};
 }
-
-=pod
 
 =item B<schemeless_to_schemed>
 
@@ -292,6 +288,7 @@ and http:// otherwise.
 =cut
 
 sub schemeless_to_schemed {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $uri_cand) = @_;
 
     $uri_cand =~ s|^(<?)ftp\.|$1ftp://ftp\.|
@@ -299,8 +296,6 @@ sub schemeless_to_schemed {
 
     return $uri_cand;
 }
-
-=pod
 
 =item B<is_schemed>
 
@@ -312,11 +307,27 @@ schemed, false for schemeless.
 =cut
 
 sub is_schemed {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $uri) = @_;
     return scalar $uri =~ /^<?$schemeRe:/;
 }
 
-=pod
+=item I<badinvo>
+
+  __PACKAGE__->badinvo($extra_levels, $msg)
+
+This is used to complain about bogus subroutine/method invocations.
+The args are optional.
+
+=cut
+
+sub badinvo {
+    my $package	= shift;
+    my $level	= @_ ? shift : 0;
+    my $msg	= @_ ? " (" . shift() . ")" : '';
+    my $subname	= (caller $level + 1)[3];
+    croak "Bogus invocation of $subname$msg";
+}
 
 =head2 Old Functions
 
@@ -399,6 +410,7 @@ Currently maintained by Roderick Schertler <roderick@argon.org>.
 
 
 sub _is_uri {
+    @_ == 2 || __PACKAGE__->badinvo;
     my($self, $r_uri_cand) = @_;
 
     my $uri = $$r_uri_cand;
@@ -422,10 +434,10 @@ sub _is_uri {
 
 # Old interface.
 sub find_uris (\$&) {
-    my $self = __PACKAGE__->new;
-
+    @_ == 2 || __PACKAGE__->badinvo;
     my($r_text, $callback) = @_;
-    $self->{callback} = $callback;
+
+    my $self = __PACKAGE__->new($callback);
     return $self->find($r_text);
 }
 

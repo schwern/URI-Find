@@ -1,4 +1,4 @@
-# $Id: Schemeless.pm,v 1.7 2004/10/09 12:20:07 roderick Exp $
+# $Id: Schemeless.pm,v 1.8 2005/03/22 16:03:11 roderick Exp $
 #
 # Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
 # program is free software; you can redistribute it and/or modify it
@@ -14,18 +14,15 @@ use base qw(URI::Find);
 use URI::Find ();
 
 use vars qw($VERSION);
-$VERSION = q$Revision: 1.7 $ =~ /(\d\S+)/ ? $1 : '?';
+$VERSION = q$Revision: 1.8 $ =~ /(\d\S+)/ ? $1 : '?';
 
 my($dnsSet) = 'A-Za-z0-9-';
 
-my($cruftSet) = __PACKAGE__->cruft_set . '}';
+my($cruftSet) = __PACKAGE__->cruft_set . '<>?}';
 
-# We could put the whole ISO country code thing in here.
-my($tldRe)  = '(?i:biz|com|edu|gov|info|int|mil|net|org|[a-z]{2})';
+my($tldRe) = __PACKAGE__->top_level_domain_re;
 
 my($uricSet) = __PACKAGE__->uric_set;
-
-=pod
 
 =head1 NAME
 
@@ -55,6 +52,7 @@ to a web site or a file.
 =cut
 
 sub schemeless_uri_re {
+    @_ == 1 || __PACKAGE__->badinvo;
     return qr{
               # Originally I constrained what couldn't be before the match
               # like this:  don't match email addresses, and don't start
@@ -62,12 +60,12 @@ sub schemeless_uri_re {
               #    (?<![\@.$dnsSet])
               # but I switched to saying what can be there after seeing a
               # false match of "Lite.pm" via "MIME/Lite.pm".
-              (?: ^ | (?<=[\s<(\{\[]) )
+              (?: ^ | (?<=[\s<>()\{\}\[\]]) )
               # hostname
               (?: [$dnsSet]+(?:\.[$dnsSet]+)*\.$tldRe
                   | (?:\d{1,3}\.){3}\d{1,3} ) # not inet_aton() complete
               (?:
-                  (?=[\s>?\Q$cruftSet\E]) # followed by unrelated thing
+                  (?=[\s\Q$cruftSet\E]) # followed by unrelated thing
 		  (?!\.\w)		#   but don't stop mid foo.xx.bar
                       (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
                   |$			# or end of line
@@ -77,7 +75,39 @@ sub schemeless_uri_re {
            }x;
 }
 
-=pod
+=item B<top_level_domain_re>
+
+  my $tld_re = $self->top_level_domain_re;
+
+Returns the regex for matching top level DNS domains.  The regex shouldn't
+be anchored, it shouldn't do any capturing matches, and it should make
+itself ignore case.
+
+=cut
+
+sub top_level_domain_re {
+    @_ == 1 || __PACKAGE__->badinvo;
+    my($self) = shift;
+
+    my $plain = join '|', qw(
+	aero
+	biz
+	com
+	coop
+	edu
+	gov
+	info
+	int
+	mil
+	museum
+	name
+	net
+	org
+	pro
+    );
+
+    return qr/(?:[a-z]{2}|$plain)/;
+}
 
 =head1 AUTHOR
 

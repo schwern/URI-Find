@@ -1,5 +1,13 @@
 Revision history for Perl module URI::Find.
 
+0.03  Tue Feb  1 16:15:22 EST 2000
+    - Added some heuristic discussion to the docs.
+    - Added some heuristics to avoid picking up perl module names
+    - Improved schemeless URI heuristic to avoid picking up
+      usenet board names.
+    - Handling the <URL:...> case better as suggested in RFC 2396 Apdx E
+    - Added ; to the cruft heuristic
+
 0.02  Tue Feb  1 13:11:56 EST 2000
     - Added heuristic to handle 'URL:http://www.foo.com'
     - Added heuristic to handle trailing quotes.

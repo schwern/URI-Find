@@ -68,7 +68,10 @@ BEGIN {
           'Oh, dear.  Another message from Dejanews.  http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25  How fun.'
               => 'http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25',
           'Hmmm, Storyserver from news.com.  http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811  How nice.'
-             => 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811'
+             => 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811',
+          '$html = get("http://www.perl.com/");' => 'http://www.perl.com/',
+          q|my $url = url('http://www.perl.com/cgi-bin/cpan_mod');|
+              => 'http://www.perl.com/cgi-bin/cpan_mod'
     );
 
     $Total_tests += (3 * keys %Tests);
@@ -89,3 +92,21 @@ BEGIN { $Total_tests++ }
 # Do all the tests again as one big block of text.
 my $mess_text = join "\n", keys %Tests;
 ok( find_uris($mess_text, sub { return $_[1] }) == keys %Tests );
+
+
+# Tests for false positives.
+my @FalseTests;
+BEGIN {
+    @FalseTests = (
+                   'HTTP::Request::Common',
+                   'comp.infosystems.www.authoring.cgi'
+                  );
+
+    $Total_tests += @FalseTests * 2;
+}
+
+foreach my $f_text (@FalseTests) {
+    my $orig_text = $f_text;
+    ok( find_uris($f_text, sub {1}) == 0 );
+    ok( $orig_text eq $f_text );
+}

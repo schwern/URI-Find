@@ -1,8 +1,9 @@
 Changes
+INSTALL
 MANIFEST
 Makefile.PL
-t/Find.t
+README
 lib/URI/Find.pm
 lib/URI/Find/Schemeless.pm
-INSTALL
-README
+t/Find.t
+t/Schemeless.t

@@ -1,5 +1,12 @@
 Revision history for Perl module URI::Find.
 
+0.10  Mon Jul 10 20:14:08 EDT 2000
+    * Rearchitected the internals to allow simple subclassing
+    * Added URI::Find::Schemeless (thanks Roderick)
+
+0.04  Sat Feb 26 09:05:11 GMT 2000
+    - Added # to the uric set of characters so HTML anchors are caught.
+
 0.03  Tue Feb  1 16:15:22 EST 2000
     - Added some heuristic discussion to the docs.
     - Added some heuristics to avoid picking up perl module names

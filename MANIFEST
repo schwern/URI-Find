@@ -3,5 +3,6 @@ MANIFEST
 Makefile.PL
 t/Find.t
 lib/URI/Find.pm
+lib/URI/Find/Schemeless.pm
 INSTALL
 README

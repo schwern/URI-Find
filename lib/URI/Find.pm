@@ -120,7 +120,17 @@ __END__
 
 This module does one thing: Finds URIs and URLs in plain text.  It
 finds them quickly and it finds them B<all> (or what URI::URL
-considers a URI to be.)
+considers a URI to be.)  It employs a series of heuristics to:
+
+=over 4
+
+=item Find schemeless URIs (ie. www.foo.com)
+
+=item Avoid picking up trailing characters from the text
+
+=item Avoid picking up URL-like things such as perl module names.
+
+=back
 
 
 =head2 Functions
@@ -172,12 +182,27 @@ Wrap each URI found in an HTML anchor.
             });
 
 
+=head1 CAVEATS, BUGS, ETC...
+
+RFC 2396 Appendix E suggests using the form '<http://www.foo.com>' or
+'<URL:http://www.foo.com>' when putting URLs in plain text.  URI::Find
+accomidates this suggestion and considers the entire thing (brackets
+and all) to be part of the URL found.  This means that when
+find_uris() sees '<URL:http://www.foo.com>' it will hand that entire
+string to your callback, not just the URL.
+
+NOTE:  The prototype on find_uris() is already getting annoying to me.
+I might remove it in a future version.
+
+
 =head1 SEE ALSO
 
-  L<URI::URL>, L<URI>, RFC 2396
+  L<URI::URL>, L<URI>, RFC 2396 (especially Appendix E)
+
 
 =head1 AUTHOR
 
-Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman, Greg Bacon and Jeff Pinyan.
+Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman,
+Greg Bacon and Jeff Pinyan.
 
 =cut

@@ -1,4 +1,4 @@
-# $Id: Find.pm,v 1.9 2001/07/27 12:13:42 roderick Exp $
+# $Id: Find.pm,v 1.10 2002/03/20 19:39:10 roderick Exp $
 
 package URI::Find;
 
@@ -361,8 +361,11 @@ Check each URI in document to see if it exists.
   $finder->find(\$text);
 
 
-Wrap each URI found in an HTML anchor.
+Turn plain text into HTML, with each URI found wrapped in an HTML anchor.
 
+  use CGI qw(escapeHTML);
+
+  $text = "<pre>\n" . escapeHTML($text) . "</pre>\n";
   my $finder = URI::Find->new(
                               sub {
                                   my($uri, $orig_uri) = @_;

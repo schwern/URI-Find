@@ -1,9 +1,10 @@
- $Id: MANIFEST,v 1.6 2004/10/10 21:29:25 roderick Exp $
+ $Id: MANIFEST,v 1.7 2004/10/10 21:31:50 roderick Exp $
 
 Changes
 INSTALL
 MANIFEST
 MANIFEST.SKIP
+META.yml                                 Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 TODO

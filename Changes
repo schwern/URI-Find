@@ -1,5 +1,12 @@
 Revision history for Perl module URI::Find.
 
+0.13 Mon Jul  1 10:37:54 EDT 2002
+    - Don't find any schemeless URIs with a plain URI::Find.  Previously
+      it'd find ones which started with "ftp." and "www.", but it was
+      more prone to false positives than URI::Find::Schemeless.
+    - Have schemeless_to_schemed use http:// except in the specific case
+      in which it uses ftp://.  Remove URI::Find::Schemeless's version.
+
 0.12 Wed Mar 20 14:39:21 EST 2002
     - Improve the "wrap each URI found in an HTML anchor" example.
     - Release a new version so CPAN sees the maintainer change.
@@ -31,4 +38,4 @@ Revision history for Perl module URI::Find.
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.
 
-$Id: Changes,v 1.7 2002/03/20 19:39:49 roderick Exp $
+$Id: Changes,v 1.8 2002/07/01 14:44:12 roderick Exp $

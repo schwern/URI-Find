@@ -45,11 +45,18 @@ sub eqarray  {
 }
 
 # Change this to your # of ok() calls + 1
-BEGIN { $Total_tests = 25 }
+BEGIN { $Total_tests = 1 }
 
-# ARGH!  URI::URL is inconsistant in how it normalizes URLs!
-# HTTP URLs get a trailing slash, FTP and gopher do not.
-my %Tests = (
+my %Tests;
+BEGIN {
+    # ARGH!  URI::URL is inconsistant in how it normalizes URLs!
+    # HTTP URLs get a trailing slash, FTP and gopher do not.
+    %Tests = (
+          '<URL:http://www.perl.com>' => 'http://www.perl.com/', 
+          '<ftp://ftp.site.org>'      => 'ftp://ftp.site.org',
+          '<ftp.site.org>'            => 'ftp://ftp.site.org',
+          'Make sure "http://www.foo.com" is caught' =>
+                'http://www.foo.com/',
           'http://www.foo.com'  => 'http://www.foo.com/',
           'www.foo.com'         => 'http://www.foo.com/',
           'ftp.foo.com'         => 'ftp://ftp.foo.com',
@@ -62,7 +69,10 @@ my %Tests = (
               => 'http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25',
           'Hmmm, Storyserver from news.com.  http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811  How nice.'
              => 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811'
-         );
+    );
+
+    $Total_tests += (3 * keys %Tests);
+}
 
 while( my($text, $expect) = each %Tests ) {
     my($orig_text) = $text;
@@ -73,3 +83,9 @@ while( my($text, $expect) = each %Tests ) {
       );
     ok( $text eq $orig_text );
 }
+
+BEGIN { $Total_tests++ }
+
+# Do all the tests again as one big block of text.
+my $mess_text = join "\n", keys %Tests;
+ok( find_uris($mess_text, sub { return $_[1] }) == keys %Tests );

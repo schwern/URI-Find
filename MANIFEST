@@ -1,4 +1,4 @@
- $Id: MANIFEST,v 1.5 2001/07/27 12:05:20 roderick Exp $
+ $Id: MANIFEST,v 1.6 2004/10/10 21:29:25 roderick Exp $
 
 Changes
 INSTALL
@@ -6,6 +6,7 @@ MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 README
+TODO
 lib/URI/Find.pm
 lib/URI/Find/Schemeless.pm
 t/Find.t

@@ -1,5 +1,9 @@
 Revision history for Perl module URI::Find.
 
+0.12 Wed Mar 20 14:39:21 EST 2002
+    - Improve the "wrap each URI found in an HTML anchor" example.
+    - Release a new version so CPAN sees the maintainer change.
+
 0.11 Thu Jul 26 14:43:49 EDT 2001
     - Michael passed the module to Roderick for maintenance.
     - Improve test suite.
@@ -27,4 +31,4 @@ Revision history for Perl module URI::Find.
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.
 
-$Id: Changes,v 1.6 2001/07/27 12:13:40 roderick Exp $
+$Id: Changes,v 1.7 2002/03/20 19:39:49 roderick Exp $

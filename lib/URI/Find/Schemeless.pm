@@ -1,4 +1,4 @@
-# $Id: Schemeless.pm,v 1.5 2001/07/27 12:41:19 roderick Exp $
+# $Id: Schemeless.pm,v 1.6 2002/07/01 14:45:52 roderick Exp $
 
 package URI::Find::Schemeless;
 
@@ -7,6 +7,9 @@ use base qw(URI::Find);
 # base.pm error in 5.005_03 prevents it from loading URI::Find if I'm
 # required first.
 use URI::Find ();
+
+use vars qw($VERSION);
+$VERSION = q$Revision: 1.6 $ =~ /(\d\S+)/ ? $1 : '?';
 
 my($dnsSet) = 'A-Za-z0-9-';
 
@@ -67,17 +70,6 @@ sub schemeless_uri_re {
                   |/[$uricSet#]*	# or slash and URI chars
               )
            }x;
-}
-
-
-sub schemeless_to_schemed {
-    my($self, $uri) = @_;
-
-    $uri = $self->SUPER::schemeless_to_schemed($uri);
-
-    $uri =~ s|^(<?)|${1}http://| unless $self->is_schemed($uri);
-
-    return $uri;
 }
 
 =pod

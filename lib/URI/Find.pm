@@ -1,4 +1,4 @@
-# $Id: Find.pm,v 1.11 2002/03/20 19:40:14 roderick Exp $
+# $Id: Find.pm,v 1.12 2002/07/01 14:44:38 roderick Exp $
 
 package URI::Find;
 
@@ -7,7 +7,7 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.12';
+$VERSION = '0.13';
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);
@@ -24,10 +24,6 @@ my($uricSet)  = $URI::uric;
 # subset of uric without a colon ("I have no colon and yet I must poop")
 my($uricCheat) = __PACKAGE__->uric_set;
 $uricCheat =~ tr/://d;
-
-# Find potential schemeless URIs.  Make sure you don't pick up things
-# like 'comp.infosystems.www.cgi'
-my($schemelessRe) = qr/(?<!\.)(?:www\.|ftp\.)/;
 
 # Identifying characters accidentally picked up with a URI.
 my($cruftSet) = q{),.'";}; #'#
@@ -51,20 +47,11 @@ my($cruftSet) = q{),.'";}; #'#
 
 =head1 DESCRIPTION
 
-This module does one thing: Finds URIs and URLs in plain text.  It
-finds them quickly and it finds them B<all> (or what URI::URL
-considers a URI to be.)  It employs a series of heuristics to:
-
-=over 4
-
-=item Find schemeless URIs (ie. www.foo.com)
-
-=item Avoid picking up trailing characters from the text
-
-=item Avoid picking up URL-like things such as perl module names.
-
-=back
-
+This module does one thing: Finds URIs and URLs in plain text.  It finds
+them quickly and it finds them B<all> (or what URI::URL considers a URI
+to be.)  It only finds URIs which include a scheme (http:// or the
+like), for something a bit less strict have a look at
+L<URI::Find::Schemeless|URI::Find::Schemeless>.
 
 =head2 Public Methods
 
@@ -170,9 +157,9 @@ these methods.
 
   my $uri_re = $self->uri_re;
 
-Returns the regex for finding absolute, schemed uris
+Returns the regex for finding absolute, schemed URIs
 (http://www.foo.com and such).  This, combined with
-schemeless_uri_re() is what finds candidate uris.
+schemeless_uri_re() is what finds candidate URIs.
 
 Usually this method does not have to be overridden.
 
@@ -191,18 +178,20 @@ sub uri_re {
 
   my $schemeless_re = $self->schemeless_uri_re;
 
-Returns the regex for finding schemeless uris (www.foo.com and such)
-and other things which might be uris.  The default implementation only
-looks for things starting with www and ftp.  It does this to limit the
-number of false positives.
+Returns the regex for finding schemeless URIs (www.foo.com and such) and
+other things which might be URIs.  By default this will match othing
+(though it used to try to find schemeless URIs which started with C<www>
+and C<ftp>).
 
-Many people will want to override this method.
+Many people will want to override this method.  See L<URI::Find::Schemeless>
+for a subclass does a reasonable job of finding URIs which might be missing
+the scheme.
 
 =cut
 
 sub schemeless_uri_re {
     my($self) = shift;
-    return $schemelessRe . "[".$self->uric_set."#]*";
+    return qr/\b\B/; # match nothing
 }
 
 =pod
@@ -272,8 +261,9 @@ sub decruft {
 
   my $uri = $self->recruft($uri);
 
-This method puts back the cruft taken off with decruft().  This is
-necessary... for reasons I'm not going to go into at the moment.
+This method puts back the cruft taken off with decruft().  This is necessary
+because the cruft is destructively removed from the string before invoking
+the user's callback, so it has to be put back afterwards.
 
 =cut
 
@@ -291,16 +281,17 @@ sub recruft {
 
   my $schemed_uri = $self->schemeless_to_schemed($schemeless_uri);
 
-This takes a schemeless URI and returns an absolute, schemed URI.
-If you overrode schemeless_uri_re(), you probably want to override this.
+This takes a schemeless URI and returns an absolute, schemed URI.  The
+standard implementation supplies ftp:// for URIs which start with ftp.,
+and http:// otherwise.
 
 =cut
 
 sub schemeless_to_schemed {
     my($self, $uri_cand) = @_;
 
-    $uri_cand =~ s|^(<?)www\.|$1http://www\.|;
-    $uri_cand =~ s|^(<?)ftp\.|$1ftp://ftp\.|;
+    $uri_cand =~ s|^(<?)ftp\.|$1ftp://ftp\.|
+	or $uri_cand =~ s|^(<?)|${1}http://|;
 
     return $uri_cand;
 }
@@ -311,7 +302,7 @@ sub schemeless_to_schemed {
 
   $obj->is_schemed($uri);
 
-Returns whether or not the given uri is schemed or schemeless.  True for
+Returns whether or not the given URI is schemed or schemeless.  True for
 schemed, false for schemeless.
 
 =cut

@@ -1,15 +1,14 @@
-# $Id: Find.t,v 1.7 2001/07/27 12:13:44 roderick Exp $
+#!perl -w
+use strict;
+
+# $Id: Find.t,v 1.8 2001/07/27 12:41:42 roderick Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
-######################### We start with some black magic to print on failure.
-
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-use strict;
-
 use vars qw($Total_tests);
+
+######################### We start with some black magic to print on failure.
 
 my $loaded;
 my $test_num = 1;
@@ -19,12 +18,11 @@ print "1..$Total_tests\n";
 use URI::Find;
 use URI::Find::Schemeless ();
 $loaded = 1;
+BEGIN { $Total_tests++ }
 ok(1, 'compile');
+
 ######################### End of black magic.
 
-# Insert your test code below (better if it prints "ok 13"
-# (correspondingly "not ok 13") depending on the success of chunk 13
-# of the test code):
 sub ok {
     my($test, $name) = @_;
     print "not " unless $test;
@@ -46,9 +44,6 @@ sub eqarray  {
     }
     return $ok;
 }
-
-# Change this to your # of ok() calls + 1
-BEGIN { $Total_tests = 1 }
 
 # %Run contains one entry for each type of finder.  Keys are mnemonics,
 # required to be a single letter.  The values are hashes, keys are names
@@ -114,7 +109,7 @@ BEGIN {
               => 'http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25',
           'Hmmm, Storyserver from news.com.  http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811  How nice.'
              => [[S => 'http://news.com/'],
-	     	 [$all, 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811']],
+	     	 [$all => 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811']],
           '$html = get("http://www.perl.com/");' => 'http://www.perl.com/',
           q|my $url = url('http://www.perl.com/cgi-bin/cpan_mod');|
               => 'http://www.perl.com/cgi-bin/cpan_mod',
@@ -133,6 +128,9 @@ BEGIN {
 	      => [[S => 'http://1.2.3.4/']],
 	  'mail.eserv.com.au?  failed before ? designated end'
 	      => [[S => 'http://mail.eserv.com.au/']],
+	  'foo.info/himom ftp.bar.biz'
+	      => [[S => 'http://foo.info/himom'],
+		  [$all => 'ftp://ftp.bar.biz']],
 
 	  # False tests
 	  'HTTP::Request::Common'			=> [],

@@ -5,7 +5,7 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = 0.03;
+$VERSION = '0.04';
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);
@@ -28,7 +28,7 @@ $uricCheat =~ tr/://d;
 my($schemelessRe) = qr/(?<!\.)(?:www\.|ftp\.)/;
 
 # Look for schemed URLs or some common schemeless ones.
-my($uriRe)    = qr/(?:$schemeRe:[$uricCheat]|$schemelessRe)[$uricSet]*/;
+my($uriRe)    = qr/(?:$schemeRe:[$uricCheat]|$schemelessRe)[$uricSet#]*/;
 
 
 # $urlsmorphed = _morphurls($text, \&callback);

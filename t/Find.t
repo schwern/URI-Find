@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-# $Id: Find.t,v 1.9 2002/07/01 14:46:19 roderick Exp $
+# $Id: Find.t,v 1.10 2004/10/09 12:20:08 roderick Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -133,6 +133,14 @@ BEGIN {
 	  'foo.info/himom ftp.bar.biz'
 	      => [[S => 'http://foo.info/himom'],
 		  [S => 'ftp://ftp.bar.biz']],
+	  '(http://round.com)'   => 'http://round.com/',
+	  '[http://square.com]'  => 'http://square.com/',
+	  '{http://brace.com}'   => 'http://brace.com/',
+	  '<http://angle.com>'   => 'http://angle.com/',
+	  '(round.com)'          => [[S => 'http://round.com/'  ]],
+	  '[square.com]'         => [[S => 'http://square.com/' ]],
+	  '{brace.com}'          => [[S => 'http://brace.com/'  ]],
+	  '<angle.com>'          => [[S => 'http://angle.com/'  ]],
 
 	  # False tests
 	  'HTTP::Request::Common'			=> [],
@@ -145,6 +153,8 @@ BEGIN {
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
     	  'x comp.ai.nat-lang libdb.so.3 x'		=> [],
 	  'www.marselisl www.info@skive-hallerne.dk'	=> [],
+#	  q{$url = 'http://'.rand(1000000).'@anonymizer.com/'.$url;}
+#							=> [],
     );
 
     # Convert plain string values to a list of 1 spec which indicates

@@ -1,7 +1,12 @@
-# $Id: Schemeless.pm,v 1.6 2002/07/01 14:45:52 roderick Exp $
+# $Id: Schemeless.pm,v 1.7 2004/10/09 12:20:07 roderick Exp $
+#
+# Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
+# program is free software; you can redistribute it and/or modify it
+# under the same terms as Perl itself.
 
 package URI::Find::Schemeless;
 
+use strict;
 use base qw(URI::Find);
 
 # base.pm error in 5.005_03 prevents it from loading URI::Find if I'm
@@ -9,11 +14,11 @@ use base qw(URI::Find);
 use URI::Find ();
 
 use vars qw($VERSION);
-$VERSION = q$Revision: 1.6 $ =~ /(\d\S+)/ ? $1 : '?';
+$VERSION = q$Revision: 1.7 $ =~ /(\d\S+)/ ? $1 : '?';
 
 my($dnsSet) = 'A-Za-z0-9-';
 
-my($cruftSet) = __PACKAGE__->cruft_set;
+my($cruftSet) = __PACKAGE__->cruft_set . '}';
 
 # We could put the whole ISO country code thing in here.
 my($tldRe)  = '(?i:biz|com|edu|gov|info|int|mil|net|org|[a-z]{2})';
@@ -57,12 +62,12 @@ sub schemeless_uri_re {
               #    (?<![\@.$dnsSet])
               # but I switched to saying what can be there after seeing a
               # false match of "Lite.pm" via "MIME/Lite.pm".
-              (?: ^ | (?<=[\s<]) )
+              (?: ^ | (?<=[\s<(\{\[]) )
               # hostname
               (?: [$dnsSet]+(?:\.[$dnsSet]+)*\.$tldRe
                   | (?:\d{1,3}\.){3}\d{1,3} ) # not inet_aton() complete
               (?:
-                  (?=[\s>?$cruftSet])	# followed by unrelated thing
+                  (?=[\s>?\Q$cruftSet\E]) # followed by unrelated thing
 		  (?!\.\w)		#   but don't stop mid foo.xx.bar
                       (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
                   |$			# or end of line

@@ -1,4 +1,8 @@
-# $Id: Find.pm,v 1.12 2002/07/01 14:44:38 roderick Exp $
+# $Id: Find.pm,v 1.13 2004/10/09 12:20:05 roderick Exp $
+#
+# Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
+# program is free software; you can redistribute it and/or modify it
+# under the same terms as Perl itself.
 
 package URI::Find;
 
@@ -26,7 +30,7 @@ my($uricCheat) = __PACKAGE__->uric_set;
 $uricCheat =~ tr/://d;
 
 # Identifying characters accidentally picked up with a URI.
-my($cruftSet) = q{),.'";}; #'#
+my($cruftSet) = q{]),.'";}; #'#
 
 
 =pod
@@ -248,7 +252,7 @@ sub decruft {
     $self->{start_cruft} = '';
     $self->{end_cruft} = '';
 
-    if( $orig_match =~ s/([$cruftSet]+)$// ) {
+    if( $orig_match =~ s/([\Q$cruftSet\E]+)$// ) {
         $self->{end_cruft} = $1;
     }
 

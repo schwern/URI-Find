@@ -1,5 +1,11 @@
 Revision history for Perl module URI::Find.
 
+0.14
+    - Add copyright notice.
+    - Add ] to main $cruftSet, } to schemeless $cruftSet, for
+      [http://square.com] and {brace.com}.
+    - quotemeta() $cruftSet.
+
 0.13 Mon Jul  1 10:37:54 EDT 2002
     - Don't find any schemeless URIs with a plain URI::Find.  Previously
       it'd find ones which started with "ftp." and "www.", but it was
@@ -38,4 +44,4 @@ Revision history for Perl module URI::Find.
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.
 
-$Id: Changes,v 1.8 2002/07/01 14:44:12 roderick Exp $
+$Id: Changes,v 1.9 2004/10/09 12:20:04 roderick Exp $

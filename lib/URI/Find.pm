@@ -3,7 +3,7 @@ package URI::Find;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = 0.01;
+$VERSION = 0.02;
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);
@@ -44,20 +44,26 @@ sub find_uris (\$&) {
         # We want to avoid picking up the trailing paren, period or comma.
         # Of course, this might wreck a perfectly valid URI, more often than
         # not it corrects a parse mistake.
-        my $cruft = '';
-        if( $orig_match =~ s|([),.]+)$|| ) {
-            $cruft = $1;
+        my $end_cruft = '';
+        if( $orig_match =~ s|([),.>'"]+)$|| ) {
+            $end_cruft = $1;
+        }
+
+        # Heuristic:  Watch for possible <URI:http://www.foo.com>
+        my $start_cruft = '';
+        if( $orig_match =~ s|^(UR[ILN]:)|| ) {
+            $start_cruft = $1;
         }
 
         if( my $uri = _is_uri(\$orig_match) ) { # Its a URI, work with it.
             $urlsfound++;
 
             # Don't forget to put any cruft we accidentally matched back.
-            $callback->($uri, $orig_match) . $cruft;
+            $start_cruft . $callback->($uri, $orig_match) . $end_cruft;
         }
         else {                        # False alarm.
             # Again, don't forget the cruft.
-            $orig_match . $cruft;
+            $start_cruft . $orig_match . $end_cruft;
         }
     }eg;
 

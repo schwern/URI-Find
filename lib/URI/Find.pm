@@ -5,7 +5,7 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.10';
+$VERSION = '0.11';
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);
@@ -392,6 +392,8 @@ I might remove it in a future version.
 
 Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman,
 Greg Bacon, Jeff Pinyan, Roderick Schertler and others.
+
+Currently maintained by Roderick Schertler <roderick@argon.org>.
 
 =cut
 

@@ -2,6 +2,10 @@ package URI::Find::Schemeless;
 
 use base qw(URI::Find);
 
+# base.pm error in 5.005_03 prevents it from loading URI::Find if I'm
+# required first.
+use URI::Find ();
+
 my($dnsSet) = 'A-Za-z0-9-';
 
 my($cruftSet) = __PACKAGE__->cruft_set;
@@ -53,8 +57,11 @@ sub schemeless_uri_re {
               (?: [$dnsSet]+(?:\.[$dnsSet]+)*\.$tldRe
                   | (?:\d{1,3}\.){3}\d{1,3} ) # not inet_aton() complete
               (?:
-                  (?=[\s>$cruftSet])	# followed by unrelated thing,
-                  |$			# or end of line,
+                  (?=[\s>?$cruftSet])	# followed by unrelated thing
+		  (?!\.\w)		#   but don't stop mid foo.xx.bar
+                      (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
+                  |$			# or end of line
+                      (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
                   |/[$uricSet#]*	# or slash and URI chars
               )
            }x;
@@ -75,8 +82,10 @@ sub schemeless_to_schemed {
 
 =head1 AUTHOR
 
-Original code by Roderick Schertler.  
-Maintained by Michael G Schwern <schwern@pobox.com>
+Original code by Roderick Schertler <roderick@argon.org>, adapted by
+Michael G Schwern <schwern@pobox.com>.
+
+Currently maintained by Roderick Schertler <roderick@argon.org>.
 
 =head1 SEE ALSO
 

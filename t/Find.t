@@ -1,3 +1,5 @@
+# $Id: Find.t,v 1.7 2001/07/27 12:13:44 roderick Exp $
+
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 

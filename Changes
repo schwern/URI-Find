@@ -26,3 +26,5 @@ Revision history for Perl module URI::Find.
 
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.
+
+$Id: Changes,v 1.6 2001/07/27 12:13:40 roderick Exp $

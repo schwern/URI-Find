@@ -1,3 +1,5 @@
+# $Id: Find.pm,v 1.9 2001/07/27 12:13:42 roderick Exp $
+
 package URI::Find;
 
 require 5.005;

@@ -1,3 +1,5 @@
+# $Id: Schemeless.pm,v 1.4 2001/07/27 12:13:44 roderick Exp $
+
 package URI::Find::Schemeless;
 
 use base qw(URI::Find);

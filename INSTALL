@@ -24,3 +24,5 @@ WHAT MODULES DO I NEED?
 
         URI.pm          1.00 or higher
         URI::URL        5.00 or higher
+
+$Id: INSTALL,v 1.3 2001/07/27 12:13:40 roderick Exp $

@@ -1,0 +1,19 @@
+NAME
+         URI::Find - Find URIs in arbitrary text
+
+SYNOPSIS
+         use URI::Find;
+
+         $how_many_found = find_uris($text, \&callback);
+
+DESCRIPTION
+       This module does one thing: Finds URIs and URLs in plain
+       text.  It finds them quickly and it finds them all (or
+       what URI::URL considers a URI to be.)
+
+AUTHOR
+       Michael G Schwern <schwern@pobox.com> with insight from
+       Uri Gutman and Jeff Pinyan.
+
+
+See the INSTALL document for more details.

@@ -1,4 +1,4 @@
-# $Id: Find.pm,v 1.10 2002/03/20 19:39:10 roderick Exp $
+# $Id: Find.pm,v 1.11 2002/03/20 19:40:14 roderick Exp $
 
 package URI::Find;
 
@@ -7,7 +7,7 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.11';
+$VERSION = '0.12';
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);

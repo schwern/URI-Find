@@ -1,4 +1,4 @@
-# $Id: Schemeless.pm,v 1.4 2001/07/27 12:13:44 roderick Exp $
+# $Id: Schemeless.pm,v 1.5 2001/07/27 12:41:19 roderick Exp $
 
 package URI::Find::Schemeless;
 
@@ -13,7 +13,7 @@ my($dnsSet) = 'A-Za-z0-9-';
 my($cruftSet) = __PACKAGE__->cruft_set;
 
 # We could put the whole ISO country code thing in here.
-my($tldRe)  = '(?i:com|edu|gov|int|mil|net|org|[a-z]{2})';
+my($tldRe)  = '(?i:biz|com|edu|gov|info|int|mil|net|org|[a-z]{2})';
 
 my($uricSet) = __PACKAGE__->uric_set;
 

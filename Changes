@@ -1,6 +1,19 @@
 Revision history for Perl module URI::Find.
 
-0.14
+0.15 Tue Mar 22 07:23:17 EST 2005
+    - Have all functions croak if invoked with the wrong number of
+      arguments.  Add URI::Find->badinvo.
+	https://rt.cpan.org/NoAuth/Bug.html?id=1845
+    - Mention DARREN's urifind script in the man page.
+    - Oops, URI::URL::strict was turned on and left on.  Put it back the
+      way you found it.  Thanks to Chris Nandor.
+	https://rt.cpan.org/NoAuth/Bug.html?id=11906
+    - Schemeless.pm:
+    	- Find '<x>intag.com</x>'.
+	- Get $tldRe from a new class method, ->top_level_domain_re.
+	- Update top level domain list.
+
+0.13 Sat Oct  9 08:20:04 EDT 2004
     - Add copyright notice.
     - Add ] to main $cruftSet, } to schemeless $cruftSet, for
       [http://square.com] and {brace.com}.
@@ -44,4 +57,4 @@ Revision history for Perl module URI::Find.
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.
 
-$Id: Changes,v 1.9 2004/10/09 12:20:04 roderick Exp $
+$Id: Changes,v 1.10 2005/03/22 16:04:54 roderick Exp $

@@ -1,9 +1,11 @@
 package URI::Find;
 
+require 5.005;
+
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = 0.02;
+$VERSION = 0.03;
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);
@@ -14,10 +16,19 @@ use URI::URL;
 # XXX This is probably more than a little cozy with URI.pm.
 require URI;
 my($schemeRe) = $URI::scheme_re;
-my($uircSet)  = $URI::uric;
+my($uricSet)  = $URI::uric;
+
+# We need to avoid picking up 'HTTP::Request::Common' so we have a
+# subset of uric without a colon ("I have no colon and yet I must poop")
+my($uricCheat) = $uricSet;
+$uricCheat =~ tr/://d;
+
+# Find potential schemeless URIs.  Make sure you don't pick up things
+# like 'comp.infosystems.www.cgi'
+my($schemelessRe) = qr/(?<!\.)(?:www\.|ftp\.)/;
 
 # Look for schemed URLs or some common schemeless ones.
-my($uriRe)    = qr/(?:$schemeRe:|www\.|ftp\.)[$uircSet]+/;
+my($uriRe)    = qr/(?:$schemeRe:[$uricCheat]|$schemelessRe)[$uricSet]*/;
 
 
 # $urlsmorphed = _morphurls($text, \&callback);
@@ -35,7 +46,7 @@ sub find_uris (\$&) {
     local $SIG{__DIE__} = 'DEFAULT';
     my $uri_cand;
     my $uri;
-    $$r_text =~ s{($uriRe)}{
+    $$r_text =~ s{(<$uriRe>|$uriRe)}{
         my($orig_match) = $1;
     
         # A heruristic.  Often you'll see things like:
@@ -45,15 +56,11 @@ sub find_uris (\$&) {
         # Of course, this might wreck a perfectly valid URI, more often than
         # not it corrects a parse mistake.
         my $end_cruft = '';
-        if( $orig_match =~ s|([),.>'"]+)$|| ) {
+        if( $orig_match =~ s|([),.'";]+)$|| ) {
             $end_cruft = $1;
         }
 
-        # Heuristic:  Watch for possible <URI:http://www.foo.com>
         my $start_cruft = '';
-        if( $orig_match =~ s|^(UR[ILN]:)|| ) {
-            $start_cruft = $1;
-        }
 
         if( my $uri = _is_uri(\$orig_match) ) { # Its a URI, work with it.
             $urlsfound++;
@@ -77,8 +84,8 @@ sub _is_uri {
     # Another cheat.  Add http:// to schemeless URIs that start with www.
     # and ftp:// to those that start with ftp.
     my $uri = $$r_uri_cand;
-    $uri =~ s|^www\.|http://www\.|;
-    $uri =~ s|^ftp\.|ftp://ftp\.|;
+    $uri =~ s|^(<?)www\.|$1http://www\.|;
+    $uri =~ s|^(<?)ftp\.|$1ftp://ftp\.|;
     
     eval {
         $uri = URI::URL->new($uri);
@@ -171,7 +178,6 @@ Wrap each URI found in an HTML anchor.
 
 =head1 AUTHOR
 
-Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman and
-Jeff Pinyan.
+Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman, Greg Bacon and Jeff Pinyan.
 
 =cut

@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.5 2001/07/27 12:08:41 roderick Exp $
+# $Id: Makefile.PL,v 1.6 2004/10/11 14:22:50 roderick Exp $
 
 # A template for Makefile.PL used by Arena Networks.
 # - Set the $PACKAGE variable to the name of your module.
@@ -42,6 +42,6 @@ WriteMakefile(
                          DIST_DEFAULT   => 'all tardist',
                          PREOP          => '$(MAKE) ci',
                          CI             => 'cvs commit',
-                         RCS_LABEL      => 'cvs tag -F v$(VERSION_SYM)',
+                         RCS_LABEL      => 'cvs tag v$(VERSION_SYM)',
                        },
 );

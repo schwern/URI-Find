@@ -1,4 +1,4 @@
-# $Id: Find.pm,v 1.13 2004/10/09 12:20:05 roderick Exp $
+# $Id: Find.pm,v 1.14 2004/10/11 14:23:26 roderick Exp $
 #
 # Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
 # program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@ require 5.005;
 use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.13';
+$VERSION = '0.14';
 @EXPORT = qw(find_uris);
 
 use constant YES => (1==1);

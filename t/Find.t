@@ -36,7 +36,7 @@ sub eqarray  {
     my($a1, $a2) = @_;
     return 0 unless @$a1 == @$a2;
     my $ok = 1;
-    for (0..$#{$a1}) { 
+    for (0..$#{$a1}) {
         unless($a1->[$_] eq $a2->[$_]) {
         $ok = 0;
         last;
@@ -95,7 +95,7 @@ BEGIN {
     # ARGH!  URI::URL is inconsistant in how it normalizes URLs!
     # HTTP URLs get a trailing slash, FTP and gopher do not.
     %Tests = (
-          '<URL:http://www.perl.com>' => 'http://www.perl.com/', 
+          '<URL:http://www.perl.com>' => 'http://www.perl.com/',
           '<ftp://ftp.site.org>'      => 'ftp://ftp.site.org',
           '<ftp.site.org>'            => 'ftp://ftp.site.org',
           'Make sure "http://www.foo.com" is caught' =>

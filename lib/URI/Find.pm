@@ -104,12 +104,12 @@ $text is a string to search and possibly modify with your callback.
 
 sub find {
     my($self, $r_text) = @_;
-    
+
     my $urlsfound = 0;
-    
+
     # Don't assume http.
     URI::URL::strict(1);
-    
+
     # Yes, evil.  Basically, look for something vaguely resembling a URL,
     # then hand it off to URI::URL for examination.  If it passes, throw
     # it to a callback and put the result in its place.
@@ -121,7 +121,7 @@ sub find {
 
     $$r_text =~ s{(<$uriRe>|$uriRe)}{
         my($orig_match) = $1;
-    
+
         # A heruristic.  Often you'll see things like:
         # "I saw this site, http://www.foo.com, and its really neat!"
         # or "Foo Industries (at http://www.foo.com)"
@@ -178,7 +178,7 @@ Usually this method does not have to be overridden.
 
 sub uri_re {
     my($self) = shift;
-    return sprintf '%s:[%s][%s#]*', $schemeRe, 
+    return sprintf '%s:[%s][%s#]*', $schemeRe,
                                     $uricCheat,
                                     $self->uric_set;
 }
@@ -236,7 +236,7 @@ sub cruft_set {
 }
 
 =pod
-  
+
 
 =item B<decruft>
 
@@ -334,7 +334,7 @@ deprecated.
 Simply print the original URI text found and the normalized
 representation.
 
-  my $finder = URI::Find->new( 
+  my $finder = URI::Find->new(
                       sub {
                           my($uri, $orig_uri) = @_;
                           print "The text '$orig_uri' represents '$uri'\n";
@@ -384,7 +384,7 @@ I might remove it in a future version.
 
 =head1 SEE ALSO
 
-  L<URI::Find::Schemeless>, L<URI::URL>, L<URI>, 
+  L<URI::Find::Schemeless>, L<URI::URL>, L<URI>,
   RFC 2396 (especially Appendix E)
 
 
@@ -400,23 +400,23 @@ Currently maintained by Roderick Schertler <roderick@argon.org>.
 
 sub _is_uri {
     my($self, $r_uri_cand) = @_;
-    
+
     my $uri = $$r_uri_cand;
 
     # Translate schemeless to schemed if necessary.
     $uri = $self->schemeless_to_schemed($uri) unless
       $uri =~ /^<?$schemeRe:/;
-    
+
     eval {
         $uri = URI::URL->new($uri);
     };
-    
+
     if($@ || !defined $uri) {	# leave everything untouched, its not a URI.
         return NO;
     }
     else {			# Its a URI.
         return $uri;
-    }    
+    }
 }
 
 

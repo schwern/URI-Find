@@ -65,7 +65,7 @@ sub schemeless_uri_re {
                   |/[$uricSet#]*	# or slash and URI chars
               )
            }x;
-}   
+}
 
 
 sub schemeless_to_schemed {

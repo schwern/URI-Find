@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-# $Id: Find.t,v 1.11 2005/03/22 16:03:12 roderick Exp $
+# $Id: Find.t,v 1.12 2005/07/22 10:02:37 roderick Exp $
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -143,6 +143,7 @@ BEGIN {
 	  '<angle.com>'          => [[S => 'http://angle.com/'  ]],
 	  '<x>intag.com</x>'     => [[S => 'http://intag.com/'  ]],
 	  '[mailto:somebody@company.ext]' => 'mailto:somebody@company.ext',
+	  'HTtp://MIXED-Case.Com' => 'http://mixed-case.com/',
 
 	  # False tests
 	  'HTTP::Request::Common'			=> [],

@@ -1,5 +1,14 @@
 Revision history for Perl module URI::Find.
 
+Next
+    Other
+    * Michael G Schwern is now primary maintainer.  Thanks for all your
+      work, Roderick!
+    * Repository moved to http://github.com/schwern/uri-find
+    * Now requires Test::More
+    * Verisoning scheme changed to ISO date integers
+    * Minimum Perl version is now 5.6.0.
+
 0.16 Fri Jul 22 06:00:24 EDT 2005
     - Oops, make the URI::Find::Schemeless->top_level_domain_re case
       insensitive, as it should be and the docs claimed it was.  Thanks

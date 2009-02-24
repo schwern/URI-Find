@@ -1,5 +1,3 @@
-# $Id: Makefile.PL,v 1.6 2004/10/11 14:22:50 roderick Exp $
-
 # A template for Makefile.PL used by Arena Networks.
 # - Set the $PACKAGE variable to the name of your module.
 # - Set $LAST_API_CHANGE to reflect the last version you changed the API

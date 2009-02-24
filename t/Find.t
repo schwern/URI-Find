@@ -1,8 +1,6 @@
 #!perl -w
 use strict;
 
-# $Id: Find.t,v 1.12 2005/07/22 10:02:37 roderick Exp $
-
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 

@@ -1,5 +1,3 @@
-$Id: TODO,v 1.3 2009/01/28 19:16:03 roderick Exp $
-
 - parameterize top level domain list in Schemeless.pm?
 - shouldn't have picked this out:
     $url = 'http://'.rand(1000000).'@anonymizer.com/'.$url (/url 63);

@@ -1,5 +1,3 @@
-# $Id: MANIFEST.SKIP,v 1.1 2001/07/27 12:05:20 roderick Exp $
-
 (^|/)CVS/
 ~$
 ^Makefile$

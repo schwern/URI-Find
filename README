@@ -23,9 +23,7 @@ AUTHOR
 See the INSTALL document for more details.
 
 
-Copyright (c) 2000 Michael G. Schwern.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+Copyright (c) 2000, 2009 Michael G. Schwern.  All rights reserved.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
-
-$Id: README,v 1.5 2004/10/09 12:20:04 roderick Exp $

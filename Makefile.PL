@@ -15,6 +15,7 @@ my %mm_params = (
     AUTHOR              => 'Michael G Schwern <schwern@pobox.com>',
 
     PREREQ_PM           => {
+        Test::More     => '0.82',
         URI            => '1.00',
         URI::URL       => '5.00',
     },

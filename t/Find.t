@@ -1,49 +1,14 @@
-#!perl -w
+#!/usr/bin/perl -w
+
 use strict;
 
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+use Test::More 'no_plan';
 
-use vars qw($Total_tests);
-
-######################### We start with some black magic to print on failure.
-
-my $loaded;
-my $test_num = 1;
-BEGIN { $| = 1; $^W = 1; }
-END {print "not ok $test_num\n" unless $loaded;}
-print "1..$Total_tests\n";
-use URI::Find;
-use URI::Find::Schemeless ();
-$loaded = 1;
-BEGIN { $Total_tests++ }
-ok(1, 'compile');
-
-######################### End of black magic.
+use_ok 'URI::Find';
+use_ok 'URI::Find::Schemeless';
 
 my $No_joined = @ARGV && $ARGV[0] eq '--no-joined' ? shift : 0;
 
-sub ok {
-    my($test, $name) = @_;
-    print "not " unless $test;
-    print "ok $test_num";
-    print " - $name" if defined $name && !$test;
-    print "\n";
-    $test_num++;
-}
-
-sub eqarray  {
-    my($a1, $a2) = @_;
-    return 0 unless @$a1 == @$a2;
-    my $ok = 1;
-    for (0..$#{$a1}) {
-        unless($a1->[$_] eq $a2->[$_]) {
-        $ok = 0;
-        last;
-        }
-    }
-    return $ok;
-}
 
 # %Run contains one entry for each type of finder.  Keys are mnemonics,
 # required to be a single letter.  The values are hashes, keys are names
@@ -174,7 +139,6 @@ BEGIN {
     # modified).
     my $finders = 0;
     $finders += keys %{ $Run{$_} } for keys %Run;
-    $Total_tests += 3 * $finders * keys %Tests;
 }
 
 # Given a run type and a list of specs, return the URLs which that type
@@ -208,22 +172,18 @@ sub run_object {
 sub run {
     my ($orig_text, @spec) = @_;
 
-    print "# testing [$orig_text]\n";
+    note "# testing [$orig_text]\n";
     for my $run_type (keys %Run) {
-	print "# run type $run_type\n";
+	note "# run type $run_type\n";
 	while( my($run_name, $run_sub) = each %{ $Run{$run_type} } ) {
-	    print "# running $run_name\n";
+	    note "# running $run_name\n";
 	    my @want = specs_to_urls $run_type, @spec;
 	    my $text = $orig_text;
 	    my @out;
 	    my $n = $run_sub->(\$text, sub { push @out, $_[0]; $_[1] });
-	    ok $n == @out,
-		"invalid return value, returned $n but got " . scalar @out;
-	    ok eqarray(\@want, \@out),
-		"output mismatch, want:\n" . join("\n", @want)
-    	    	    . "\ngot:\n" . join("\n", @out);
-	    ok $text eq $orig_text,
-		"text was modified, [$orig_text] => [$text]";
+	    is $n, @out, "return value length";
+	    is_deeply \@out, \@want, "output";
+	    is $text, $orig_text, "text unmodified";
 	}
     }
 }
@@ -234,11 +194,10 @@ while( my($text, $rspec_list) = each %Tests ) {
 
 # We used to turn URI::URL strict on and leave it on.
 
-BEGIN { $Total_tests += 2 }
 for my $val (0, 1) {
     URI::URL::strict($val);
     my $f = URI::Find->new(sub { });
     my $t = "foo";
     $f->find(\$t);
-    ok $val == URI::URL::strict, "URI::URL::strict $val";
+    is $val, URI::URL::strict(), "URI::URL::strict $val";
 }

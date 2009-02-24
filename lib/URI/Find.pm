@@ -35,7 +35,7 @@ my($cruftSet) = q{]),.'";}; #'#
 
 =head1 NAME
 
-  URI::Find - Find URIs in arbitrary text
+URI::Find - Find URIs in arbitrary text
 
 
 =head1 SYNOPSIS

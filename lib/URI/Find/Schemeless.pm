@@ -64,11 +64,11 @@ sub schemeless_uri_re {
                   | (?:\d{1,3}\.){3}\d{1,3} ) # not inet_aton() complete
               (?:
                   (?=[\s\Q$cruftSet\E]) # followed by unrelated thing
-		  (?!\.\w)		#   but don't stop mid foo.xx.bar
-                      (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
-                  |$			# or end of line
-                      (?<!\.p[ml])	#   but exclude Foo.pm and Foo.pl
-                  |/[$uricSet#]*	# or slash and URI chars
+                  (?!\.\w)              #   but don't stop mid foo.xx.bar
+                      (?<!\.p[ml])      #   but exclude Foo.pm and Foo.pl
+                  |$                    # or end of line
+                      (?<!\.p[ml])      #   but exclude Foo.pm and Foo.pl
+                  |/[$uricSet#]*        # or slash and URI chars
               )
            }x;
 }
@@ -88,20 +88,20 @@ sub top_level_domain_re {
     my($self) = shift;
 
     my $plain = join '|', qw(
-	aero
-	biz
-	com
-	coop
-	edu
-	gov
-	info
-	int
-	mil
-	museum
-	name
-	net
-	org
-	pro
+        aero
+        biz
+        com
+        coop
+        edu
+        gov
+        info
+        int
+        mil
+        museum
+        name
+        net
+        org
+        pro
     );
 
     return qr/(?:[a-z]{2}|$plain)/;

@@ -9,4 +9,3 @@ use Test::More tests => 2;
 
 require_ok 'URI::Find::Schemeless';
 new_ok 'URI::Find::Schemeless' => [sub {}];
-

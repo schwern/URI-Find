@@ -10,13 +10,13 @@ use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
 
-$VERSION	= 20090224;
-@EXPORT		= qw(find_uris);
+$VERSION        = 20090224;
+@EXPORT         = qw(find_uris);
 
 use constant YES => (1==1);
 use constant NO  => !YES;
 
-use Carp	qw(croak);
+use Carp        qw(croak);
 use URI::URL;
 
 require URI;
@@ -290,7 +290,7 @@ sub schemeless_to_schemed {
     my($self, $uri_cand) = @_;
 
     $uri_cand =~ s|^(<?)ftp\.|$1ftp://ftp\.|
-	or $uri_cand =~ s|^(<?)|${1}http://|;
+        or $uri_cand =~ s|^(<?)|${1}http://|;
 
     return $uri_cand;
 }
@@ -320,10 +320,10 @@ The args are optional.
 =cut
 
 sub badinvo {
-    my $package	= shift;
-    my $level	= @_ ? shift : 0;
-    my $msg	= @_ ? " (" . shift() . ")" : '';
-    my $subname	= (caller $level + 1)[3];
+    my $package = shift;
+    my $level   = @_ ? shift : 0;
+    my $msg     = @_ ? " (" . shift() . ")" : '';
+    my $subname = (caller $level + 1)[3];
     croak "Bogus invocation of $subname$msg";
 }
 
@@ -421,10 +421,10 @@ sub _is_uri {
         $uri = URI::URL->new($uri);
     };
 
-    if($@ || !defined $uri) {	# leave everything untouched, its not a URI.
+    if($@ || !defined $uri) {   # leave everything untouched, its not a URI.
         return NO;
     }
-    else {			# Its a URI.
+    else {                      # Its a URI.
         return $uri;
     }
 }

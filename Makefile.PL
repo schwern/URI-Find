@@ -21,6 +21,8 @@ my %mm_params = (
     },
 );
 
+$mm_params{MIN_PERL_VERSION} = '5.6.0' if $mm_version >= 6.48;
+
 $mm_params{LICENSE} = 'perl' if $mm_version >= 6.31;
 
 $mm_params{META_MERGE} = {

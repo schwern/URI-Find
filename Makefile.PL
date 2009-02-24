@@ -1,45 +1,34 @@
-# A template for Makefile.PL used by Arena Networks.
-# - Set the $PACKAGE variable to the name of your module.
-# - Set $LAST_API_CHANGE to reflect the last version you changed the API
-#   of your module.
-# - Fill in your dependencies in PREREQ_PM
-# Alternatively, you can say the hell with this and use h2xs.
+#!/usr/bin/perl -w
 
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
 
-require 5.005;
+require 5.006;
 
-$PACKAGE = 'URI::Find';
-($PACKAGE_FILE) = $PACKAGE =~ /(?:\::)?([^:]+)$/;
-$LAST_API_CHANGE = 0;
+my $mm_version = $ExtUtils::MakeMaker::VERSION;
+$mm_version =~ s/_//;  # turn X.Y_Z into X.YZ
 
-eval {
-    eval "require $PACKAGE";
-};
+my %mm_params = (
+    NAME                => 'URI::Find',
 
-unless ($@) { # Make sure we did find the module.
-    print <<"CHANGE_WARN" if ${$PACKAGE.'::VERSION'} < $LAST_API_CHANGE;
+    VERSION_FROM        => "lib/URI/Find.pm",
+    ABSTRACT_FROM       => "lib/URI/Find.pm",
+    AUTHOR              => 'Michael G Schwern <schwern@pobox.com>',
 
-NOTE: There have been API changes between this version and any older
-than version $LAST_API_CHANGE!  Please read the Changes file if you
-are upgrading from a version older than $LAST_API_CHANGE.
-
-CHANGE_WARN
-}
-
-WriteMakefile(
-    NAME            => $PACKAGE,
-    VERSION_FROM    => "lib/URI/$PACKAGE_FILE.pm", # finds $VERSION
-    PREREQ_PM       => { URI            => '1.00',
-                         URI::URL       => '5.00',
-                       },
-    'dist'          => { COMPRESS   => 'gzip -9',
-                         SUFFIX     => '.gz',
-                         DIST_DEFAULT   => 'all tardist',
-                         PREOP          => '$(MAKE) ci',
-                         CI             => 'cvs commit',
-                         RCS_LABEL      => 'cvs tag v$(VERSION_SYM)',
-                       },
+    PREREQ_PM           => {
+        URI            => '1.00',
+        URI::URL       => '5.00',
+    },
 );
+
+$mm_params{LICENSE} = 'perl' if $mm_version >= 6.31;
+
+$mm_params{META_MERGE} = {
+    resources => {
+        license         => 'http://dev.perl.org/licenses/',
+        homepage        => 'http://search.cpan.org/dist/URI-Find',
+        bugtracker      => 'http://rt.cpan.org/Public/Dist/Display.html?Name=URI-Find',
+        repository      => 'http://github.com/schwern/uri-find/tree/master',
+    }
+}                               if $mm_version >= 6.46;
+
+WriteMakefile(%mm_params);

@@ -1,10 +1,11 @@
 Changes
 INSTALL
-MANIFEST
-Makefile.PL
-README
-TODO
 lib/URI/Find.pm
 lib/URI/Find/Schemeless.pm
+Makefile.PL
+MANIFEST
+README
 t/Find.t
+t/is_schemed.t
 t/load-schemeless.t
+TODO

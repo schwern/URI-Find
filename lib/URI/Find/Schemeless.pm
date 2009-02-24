@@ -12,7 +12,7 @@ use base qw(URI::Find);
 use URI::Find ();
 
 use vars qw($VERSION);
-$VERSION = q$Revision: 1.8 $ =~ /(\d\S+)/ ? $1 : '?';
+$VERSION = 20090224;
 
 my($dnsSet) = 'A-Za-z0-9-';
 

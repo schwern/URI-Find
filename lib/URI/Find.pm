@@ -94,11 +94,23 @@ sub new {
 
 $text is a string to search and possibly modify with your callback.
 
+Alternatively, C<find> can be called with a replacement function for
+the rest of the text:
+
+  use CGI qw(escapeHTML);
+  # ...
+  my $how_many_found = $finder->find(\$text, \&escapeHTML);
+
+will not only call the callback function for every URL found (and
+perform the replacement instructions therein), but also run the rest
+of the text through C<escapeHTML()>. This makes it easier to turn
+plain text which contains URLs into HTML (see example below).
+
 =cut
 
 sub find {
-    @_ == 2 || __PACKAGE__->badinvo;
-    my($self, $r_text) = @_;
+    @_ == 2 || @_ == 3 || __PACKAGE__->badinvo;
+    my($self, $r_text, $escape_func) = @_;
 
     my $urlsfound = 0;
 
@@ -114,10 +126,16 @@ sub find {
 
     my $uriRe = sprintf '(?:%s|%s)', $self->uri_re, $self->schemeless_uri_re;
 
-    $$r_text =~ s{(<$uriRe>|$uriRe)}{
-        my($orig_match) = $1;
+    $$r_text =~ s{(.*?)(<$uriRe>|$uriRe)|(?:(.+)$)}{
+        my $orig_match  = $2;
+        my $prematch    = $1;
+        my $replacement = "";
+        if(defined $3) {
+            $orig_match = "";
+            $prematch   = $3;
+        }
 
-        # A heruristic.  Often you'll see things like:
+        # A heuristic.  Often you'll see things like:
         # "I saw this site, http://www.foo.com, and its really neat!"
         # or "Foo Industries (at http://www.foo.com)"
         # We want to avoid picking up the trailing paren, period or comma.
@@ -125,17 +143,23 @@ sub find {
         # not it corrects a parse mistake.
         $orig_match = $self->decruft($orig_match);
 
-        if( my $uri = $self->_is_uri(\$orig_match) ) { # Its a URI.
+        if( length $orig_match and
+            my $uri = $self->_is_uri(\$orig_match) ) { # Its a URI.
             $urlsfound++;
 
-            # Don't forget to put any cruft we accidentally matched back.
-            $self->recruft($self->{callback}->($uri, $orig_match));
+            $replacement = $self->{callback}->($uri, $orig_match);
         }
         else {                        # False alarm.
-            # Again, don't forget the cruft.
-            $self->recruft($orig_match);
+            $replacement = $orig_match;
         }
-    }eg;
+
+        if(defined $escape_func) {
+            $prematch = $escape_func->($prematch);
+        }
+
+          # return concatenation of escaped prematch and recrufted URI
+        $prematch . $self->recruft($replacement);
+    }gse;
 
     URI::URL::strict($old_strict);
     return $urlsfound;
@@ -368,15 +392,16 @@ Check each URI in document to see if it exists.
 Turn plain text into HTML, with each URI found wrapped in an HTML anchor.
 
   use CGI qw(escapeHTML);
+  use URI::Find;
 
-  $text = "<pre>\n" . escapeHTML($text) . "</pre>\n";
   my $finder = URI::Find->new(
-                              sub {
-                                  my($uri, $orig_uri) = @_;
-                                  return qq|<a href="$uri">$orig_uri</a>|;
-                              });
-  $finder->find(\$text);
-
+      sub {
+          my($uri, $orig_uri) = @_;
+          return qq|<a href="$uri">$orig_uri</a>|;
+      }
+  );
+  $finder->find(\$text, \&escapeHTML);
+  print "<pre>$text</pre>";
 
 =head1 CAVEATS, BUGS, ETC...
 

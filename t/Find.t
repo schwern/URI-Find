@@ -201,3 +201,37 @@ for my $val (0, 1) {
     $f->find(\$t);
     is $val, URI::URL::strict(), "URI::URL::strict $val";
 }
+
+# Test new filter function
+
+#BEGIN { $Total_tests += 10 }
+my @tasks = (
+  ["Foo&Bar http://abc.com.", "Foo&amp;Bar xx&."],
+  ["http://abc.com. http://abc.com.", "xx&. xx&."],
+  ["http://abc.com?foo=bar&baz=foo", "xx&"],
+  ["& http://abc.com?foo=bar&baz=foo", "&amp; xx&"],
+  ["http://abc.com?foo=bar&baz=foo &", "xx& &amp;"],
+  ["Foo&Bar http://abc.com", "Foo&amp;Bar xx&"],
+  ["http://abc.com. Foo&Bar", "xx&. Foo&amp;Bar"],
+  ["Foo&Bar http://abc.com. Foo&Bar", "Foo&amp;Bar xx&. Foo&amp;Bar"],
+  ["Foo&Bar\nhttp://abc.com.\nFoo&Bar", "Foo&amp;Bar\nxx&.\nFoo&amp;Bar"],
+  ["Foo&Bar\nhttp://abc.com. http://def.com.\nFoo&Bar", 
+   "Foo&amp;Bar\nxx&. xx&.\nFoo&amp;Bar"],
+);
+
+for my $task (@tasks) {
+    my($str, $result) = @$task;
+    my $org = $str;
+    my $f = URI::Find->new(sub { return "xx&" });
+    $f->find(\$str, \&simple_escape);
+    ok($str eq $result, "[$org => $result] vs. [$str]");
+}
+
+sub simple_escape {
+    my($toencode) = @_;
+
+#    print "Escaping $toencode\n";
+    $toencode =~ s{&}{&amp;}gso;
+#    print "Result: $toencode\n";
+    return $toencode;
+}

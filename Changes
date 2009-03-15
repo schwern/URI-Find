@@ -1,6 +1,11 @@
 Revision history for Perl module URI::Find.
 
 Next
+    New Features
+    * Added optional replacement function to find(). Now you 
+      can not only replace URLs found, but also the rest of the text around
+      them in one fell swoop. (Mike Schilli) [rt.cpan.org 20486]
+
     Other
     * Michael G Schwern is now primary maintainer.  Thanks for all your
       work, Roderick!
@@ -9,10 +14,8 @@ Next
     * Verisoning scheme changed to ISO date integers
     * Minimum Perl version is now 5.6.0.
 
+
 0.17 Fri Mar  6 00:02:26 PST 2009
-    - (Mike Schilli) Added optional replacement function to find(). Now you 
-      can not only replace URLs found, but also the rest of the text around
-      them in one fell swoop.
 
 0.16 Fri Jul 22 06:00:24 EDT 2005
     - Oops, make the URI::Find::Schemeless->top_level_domain_re case

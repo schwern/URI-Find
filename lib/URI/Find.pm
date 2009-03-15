@@ -427,7 +427,7 @@ I might remove it in a future version.
 Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman,
 Greg Bacon, Jeff Pinyan, Roderick Schertler and others.
 
-Currently maintained by Roderick Schertler <roderick@argon.org>.
+Roderick Schertler <roderick@argon.org> maintained versions 0.11 to 0.16.
 
 =cut
 

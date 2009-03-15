@@ -204,7 +204,6 @@ for my $val (0, 1) {
 
 # Test new filter function
 
-#BEGIN { $Total_tests += 10 }
 my @tasks = (
   ["Foo&Bar http://abc.com.", "Foo&amp;Bar xx&."],
   ["http://abc.com. http://abc.com.", "xx&. xx&."],
@@ -224,14 +223,12 @@ for my $task (@tasks) {
     my $org = $str;
     my $f = URI::Find->new(sub { return "xx&" });
     $f->find(\$str, \&simple_escape);
-    ok($str eq $result, "[$org => $result] vs. [$str]");
+    is($str, $result, "escape $org");
 }
 
 sub simple_escape {
     my($toencode) = @_;
 
-#    print "Escaping $toencode\n";
     $toencode =~ s{&}{&amp;}gso;
-#    print "Result: $toencode\n";
     return $toencode;
 }

@@ -17,8 +17,6 @@ Revision history for Perl module URI::Find.
     * Minimum Perl version is now 5.6.0.
 
 
-0.17 Fri Mar  6 00:02:26 PST 2009
-
 0.16 Fri Jul 22 06:00:24 EDT 2005
     - Oops, make the URI::Find::Schemeless->top_level_domain_re case
       insensitive, as it should be and the docs claimed it was.  Thanks

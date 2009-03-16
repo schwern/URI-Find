@@ -12,7 +12,7 @@ use base qw(URI::Find);
 use URI::Find ();
 
 use vars qw($VERSION);
-$VERSION = 20090224;
+$VERSION = 20090316;
 
 my($dnsSet) = 'A-Za-z0-9-';
 

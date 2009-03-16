@@ -1,6 +1,6 @@
 Revision history for Perl module URI::Find.
 
-Next
+20090316  Mon Mar 16 16:18:10 PDT 2009
     New Features
     * Added optional replacement function to find(). Now you 
       can not only replace URLs found, but also the rest of the text around
@@ -9,7 +9,7 @@ Next
       RFC 3986 appendix C. [rt.cpan.org 20483]
 
     Other
-    * Michael G Schwern is now primary maintainer.  Thanks for all your
+    * Michael G Schwern is now primary maintainer again.  Thanks for all your
       work, Roderick!
     * Repository moved to http://github.com/schwern/uri-find
     * Now requires Test::More

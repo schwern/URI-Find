@@ -112,7 +112,10 @@ sub find {
     @_ == 2 || @_ == 3 || __PACKAGE__->badinvo;
     my($self, $r_text, $escape_func) = @_;
 
-    my $urlsfound = 0;
+    # Might be slower, but it makes the code simpler
+    $escape_func ||= sub { return $_[0] };
+
+    $self->{_uris_found} = 0;
 
     # Don't assume http.
     my $old_strict = URI::URL::strict(1);
@@ -127,43 +130,47 @@ sub find {
     my $uriRe = sprintf '(?:%s|%s)', $self->uri_re, $self->schemeless_uri_re;
 
     $$r_text =~ s{(.*?)(<$uriRe>|$uriRe)|(?:(.+)$)}{
-        my $orig_match  = $2;
-        my $prematch    = $1;
-        my $replacement = "";
-        if(defined $3) {
-            $orig_match = "";
-            $prematch   = $3;
+        if (defined $3) {
+            $escape_func->($3);
         }
-
-        # A heuristic.  Often you'll see things like:
-        # "I saw this site, http://www.foo.com, and its really neat!"
-        # or "Foo Industries (at http://www.foo.com)"
-        # We want to avoid picking up the trailing paren, period or comma.
-        # Of course, this might wreck a perfectly valid URI, more often than
-        # not it corrects a parse mistake.
-        $orig_match = $self->decruft($orig_match);
-
-        if( length $orig_match and
-            my $uri = $self->_is_uri(\$orig_match) ) { # Its a URI.
-            $urlsfound++;
-
-            $replacement = $self->{callback}->($uri, $orig_match);
+        else {
+            $self->_uri_filter($2, $1, $escape_func);
         }
-        else {                        # False alarm.
-            $replacement = $orig_match;
-        }
-
-        if(defined $escape_func) {
-            $prematch = $escape_func->($prematch);
-        }
-
-          # return concatenation of escaped prematch and recrufted URI
-        $prematch . $self->recruft($replacement);
     }gse;
 
     URI::URL::strict($old_strict);
-    return $urlsfound;
+    return $self->{_uris_found};
 }
+
+
+sub _uri_filter {
+    my($self, $orig_match, $prematch, $escape_func) = @_;
+
+    # A heuristic.  Often you'll see things like:
+    # "I saw this site, http://www.foo.com, and its really neat!"
+    # or "Foo Industries (at http://www.foo.com)"
+    # We want to avoid picking up the trailing paren, period or comma.
+    # Of course, this might wreck a perfectly valid URI, more often than
+    # not it corrects a parse mistake.
+    $orig_match = $self->decruft($orig_match);
+
+    my $replacement = '';
+    if( my $uri = $self->_is_uri(\$orig_match) ) {
+        # It's a URI
+        $self->{_uris_found}++;
+        $replacement = $self->{callback}->($uri, $orig_match);
+    }
+    else {
+        # False alarm
+        $replacement = $orig_match;
+    }
+
+    $prematch = $escape_func->($prematch);
+
+    # return concatenation of escaped prematch and recrufted URI
+    return $prematch . $self->recruft($replacement);
+}
+
 
 =back
 

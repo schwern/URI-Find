@@ -5,6 +5,8 @@ Next
     * Added optional replacement function to find(). Now you 
       can not only replace URLs found, but also the rest of the text around
       them in one fell swoop. (Mike Schilli) [rt.cpan.org 20486]
+    * Whitespace inside <...> is now ignored as per the suggestion of
+      RFC 3986 appendix C. [rt.cpan.org 20483]
 
     Other
     * Michael G Schwern is now primary maintainer.  Thanks for all your

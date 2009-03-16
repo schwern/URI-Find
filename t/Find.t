@@ -182,7 +182,7 @@ sub run {
             my @out;
             my $n = $run_sub->(\$text, sub { push @out, $_[0]; $_[1] });
             is $n, @out, "return value length";
-            is_deeply \@out, \@want, "output";
+            is_deeply \@out, \@want, "output" or diag("Original text: $text");
             is $text, $orig_text, "text unmodified";
         }
     }

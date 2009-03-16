@@ -129,14 +129,39 @@ sub find {
 
     my $uriRe = sprintf '(?:%s|%s)', $self->uri_re, $self->schemeless_uri_re;
 
-    $$r_text =~ s{(.*?)(<$uriRe>|$uriRe)|(?:(.+)$)}{
-        if (defined $3) {
-            $escape_func->($3);
+    $$r_text =~ s{ (.*?) (?:(<(?:URL:)?)(.+?)(>)|($uriRe)) | (.+?)$ }{
+        my $replace = '';
+        if( defined $6 ) {
+            $replace = $escape_func->($6);
         }
         else {
-            $self->_uri_filter($2, $1, $escape_func);
+            my $maybe_uri = '';
+
+            $replace = $escape_func->($1);
+
+            if( defined $2 ) {
+                $maybe_uri = $3;
+                my $is_uri = do {  # Don't alter $1...
+                    $maybe_uri =~ s/\s+//g;
+                    $maybe_uri =~ $uriRe;
+                };
+
+                if( $is_uri ) {
+                    $replace .= $escape_func->($2);
+                    $replace .= $self->_uri_filter($maybe_uri);
+                    $replace .= $escape_func->($4);
+                }
+                else {
+                    $replace .= $escape_func->($2.$3.$4);
+                }
+            }
+            else {
+                $replace .= $self->_uri_filter($5);
+            }
         }
-    }gse;
+
+        $replace;
+    }gsex;
 
     URI::URL::strict($old_strict);
     return $self->{_uris_found};
@@ -144,7 +169,7 @@ sub find {
 
 
 sub _uri_filter {
-    my($self, $orig_match, $prematch, $escape_func) = @_;
+    my($self, $orig_match) = @_;
 
     # A heuristic.  Often you'll see things like:
     # "I saw this site, http://www.foo.com, and its really neat!"
@@ -165,10 +190,8 @@ sub _uri_filter {
         $replacement = $orig_match;
     }
 
-    $prematch = $escape_func->($prematch);
-
-    # return concatenation of escaped prematch and recrufted URI
-    return $prematch . $self->recruft($replacement);
+    # Return recrufted replacement
+    return $self->recruft($replacement);
 }
 
 
@@ -446,8 +469,9 @@ sub _is_uri {
     my $uri = $$r_uri_cand;
 
     # Translate schemeless to schemed if necessary.
-    $uri = $self->schemeless_to_schemed($uri) unless
-      $uri =~ /^<?$schemeRe:/;
+    $uri = $self->schemeless_to_schemed($uri) if
+      $uri =~ $self->schemeless_uri_re   and
+      $uri !~ /^<?$schemeRe:/;
 
     eval {
         $uri = URI::URL->new($uri);

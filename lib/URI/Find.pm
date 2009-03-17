@@ -18,6 +18,7 @@ use constant NO  => !YES;
 
 use Carp        qw(croak);
 use URI::URL;
+use URI::Escape;
 
 require URI;
 
@@ -30,7 +31,7 @@ my($uricCheat) = __PACKAGE__->uric_set;
 $uricCheat =~ tr/://d;
 
 # Identifying characters accidentally picked up with a URI.
-my($cruftSet) = q{]),.'";}; #'#
+my($cruftSet) = q{])\},.'";}; #'#
 
 
 =head1 NAME
@@ -156,6 +157,7 @@ sub find {
                 }
             }
             else {
+                warn "Match: $5\n";
                 $replace .= $self->_uri_filter($5);
             }
         }
@@ -226,10 +228,24 @@ Usually this method does not have to be overridden.
 
 sub uri_re {
     @_ == 1 || __PACKAGE__->badinvo;
-    my($self) = shift;
-    return sprintf '%s:[%s][%s#]*', $schemeRe,
-                                    $uricCheat,
-                                    $self->uric_set;
+
+    # Based on the regex in RFC 3986 for taking apart an existing URL
+    # (([^:/?#]+):)? (//([^/?#]*))? ([^?#]*) (\?([^#]*))? (#(.*))?
+    # but we need to tighten it down some else we'll match all sorts
+    # of junk
+
+    # scheme     = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+    my $scheme   = qr{[a-z] [a-z\d+.\-]* }ix;
+
+    # Disallow : in addition to the normal stuff to avoid
+    # picking up HTTP::Regex::Common
+    my $domain   = qr{[^:/?#\s]+};
+
+    my $path     = qr{[^?#\s]*};
+    my $query    = qr{\?[^#\s]*};
+    my $fragment = qr{#\S*};
+
+    return qr{ $scheme : (?://)? $domain (?:$path) (?:$query)? (?:$fragment)? }x;
 }
 
 =item B<schemeless_uri_re>
@@ -481,7 +497,9 @@ sub _is_uri {
         return NO;
     }
     else {                      # Its a URI.
-        return $uri;
+        # URI is a bit too overzealous about escaping.
+        # XXX but this means we unescape already escaped URLs and lose round tripping
+        return uri_unescape($uri);
     }
 }
 

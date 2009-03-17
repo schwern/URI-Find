@@ -107,6 +107,7 @@ BEGIN {
           '<x>intag.com</x>'     => [[S => 'http://intag.com/'  ]],
           '[mailto:somebody@company.ext]' => 'mailto:somebody@company.ext',
           'HTtp://MIXED-Case.Com' => 'http://mixed-case.com/',
+          'IDN domains http://➡.ws/䯡'       => 'http://➡.ws/䯡',
 
           # False tests
           'HTTP::Request::Common'                       => [],

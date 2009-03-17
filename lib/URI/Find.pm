@@ -381,25 +381,43 @@ sub badinvo {
     croak "Bogus invocation of $subname$msg";
 }
 
+=back
+
 =head2 Old Functions
 
 The old find_uri() function is still around and it works, but its
 deprecated.
 
+=cut
 
-=back
+# Old interface.
+sub find_uris (\$&) {
+    @_ == 2 || __PACKAGE__->badinvo;
+    my($r_text, $callback) = @_;
+
+    my $self = __PACKAGE__->new($callback);
+    return $self->find($r_text);
+}
+
 
 =head1 EXAMPLES
 
-Simply print the original URI text found and the normalized
-representation.
+Store a list of all URIs (normalized) in the document.
 
-  my $finder = URI::Find->new(
-                      sub {
-                          my($uri, $orig_uri) = @_;
-                          print "The text '$orig_uri' represents '$uri'\n";
-                          return $orig_uri;
-                      });
+  my @uris;
+  my $finder = URI::Find->new(sub {
+      my($uri) = shift;
+      push @uris, $uri;
+  });
+  $finder->find(\$text);
+
+Print the original URI text found and the normalized representation.
+
+  my $finder = URI::Find->new(sub {
+      my($uri, $orig_uri) = @_;
+      print "The text '$orig_uri' represents '$uri'\n";
+      return $orig_uri;
+  });
   $finder->find(\$text);
 
 Check each URI in document to see if it exists.
@@ -407,15 +425,15 @@ Check each URI in document to see if it exists.
   use LWP::Simple;
 
   my $finder = URI::Find->new(sub {
-                                  my($uri, $orig_uri) = @_;
-                                  if( head $uri ) {
-                                      print "$orig_uri is okay\n";
-                                  }
-                                  else {
-                                      print "$orig_uri cannot be found\n";
-                                  }
-                                  return $orig_uri;
-                              });
+      my($uri, $orig_uri) = @_;
+      if( head $uri ) {
+          print "$orig_uri is okay\n";
+      }
+      else {
+          print "$orig_uri cannot be found\n";
+      }
+      return $orig_uri;
+  });
   $finder->find(\$text);
 
 
@@ -424,40 +442,12 @@ Turn plain text into HTML, with each URI found wrapped in an HTML anchor.
   use CGI qw(escapeHTML);
   use URI::Find;
 
-  my $finder = URI::Find->new(
-      sub {
-          my($uri, $orig_uri) = @_;
-          return qq|<a href="$uri">$orig_uri</a>|;
-      }
-  );
+  my $finder = URI::Find->new(sub {
+      my($uri, $orig_uri) = @_;
+      return qq|<a href="$uri">$orig_uri</a>|;
+  });
   $finder->find(\$text, \&escapeHTML);
   print "<pre>$text</pre>";
-
-=head1 CAVEATS, BUGS, ETC...
-
-RFC 2396 Appendix E suggests using the form '<http://www.foo.com>' or
-'<URL:http://www.foo.com>' when putting URLs in plain text.  URI::Find
-accomidates this suggestion and considers the entire thing (brackets
-and all) to be part of the URL found.  This means that when
-find_uris() sees '<URL:http://www.foo.com>' it will hand that entire
-string to your callback, not just the URL.
-
-NOTE:  The prototype on find_uris() is already getting annoying to me.
-I might remove it in a future version.
-
-
-=head1 SEE ALSO
-
-  L<URI::Find::Schemeless>, L<URI::URL>, L<URI>,
-  RFC 2396 (especially Appendix E)
-
-
-=head1 AUTHOR
-
-Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman,
-Greg Bacon, Jeff Pinyan, Roderick Schertler and others.
-
-Roderick Schertler <roderick@argon.org> maintained versions 0.11 to 0.16.
 
 =cut
 
@@ -486,15 +476,34 @@ sub _is_uri {
 }
 
 
-# Old interface.
-sub find_uris (\$&) {
-    @_ == 2 || __PACKAGE__->badinvo;
-    my($r_text, $callback) = @_;
+=head1 NOTES
 
-    my $self = __PACKAGE__->new($callback);
-    return $self->find($r_text);
-}
+Will not find URLs with Internationalized Domain Names or pretty much
+any non-ascii stuff in them.  See
+L<http://rt.cpan.org/Ticket/Display.html?id=44226>
 
 
+=head1 AUTHOR
+
+Michael G Schwern <schwern@pobox.com> with insight from Uri Gutman,
+Greg Bacon, Jeff Pinyan, Roderick Schertler and others.
+
+Roderick Schertler <roderick@argon.org> maintained versions 0.11 to 0.16.
+
+
+=head1 LICENSE
+
+Copyright 2000, 2009 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
+
+This program is free software; you can redistribute it and/or 
+modify it under the same terms as Perl itself.
+
+See F<http://www.perlfoundation.org/artistic_license_1_0>
+
+=head1 SEE ALSO
+
+L<URI::Find::Schemeless>, L<URI::URL>, L<URI>, RFC 3986 Appendix C
+
+=cut
 
 1;

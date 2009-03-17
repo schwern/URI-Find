@@ -1,5 +1,12 @@
 Revision history for Perl module URI::Find.
 
+Next
+    Docs
+    * Add LICENSE section
+    * Remove wildly out of date CAVEATS
+    * Added an example of how to get a list of all URIs.
+
+
 20090316  Mon Mar 16 16:18:10 PDT 2009
     New Features
     * Added optional replacement function to find(). Now you 

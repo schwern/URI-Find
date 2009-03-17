@@ -157,7 +157,6 @@ sub find {
                 }
             }
             else {
-                warn "Match: $5\n";
                 $replace .= $self->_uri_filter($5);
             }
         }

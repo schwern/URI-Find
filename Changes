@@ -35,7 +35,7 @@ Revision history for Perl module URI::Find.
         - Get $tldRe from a new class method, ->top_level_domain_re.
         - Update top level domain list.
 
-0.13 Sat Oct  9 08:20:04 EDT 2004
+0.14 Sat Oct  9 08:20:04 EDT 2004
     - Add copyright notice.
     - Add ] to main $cruftSet, } to schemeless $cruftSet, for
       [http://square.com] and {brace.com}.

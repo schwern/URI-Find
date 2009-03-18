@@ -1,6 +1,13 @@
 Revision history for Perl module URI::Find.
 
 Next
+    Bug Fixes
+    * Schemeless now ignores the case of the TLD.
+
+    New Features
+    * Updated the list of accepted domains for finding schemeless URIs
+      from the latest ICANN list.
+
     Docs
     * Add LICENSE section
     * Remove wildly out of date CAVEATS

@@ -87,24 +87,32 @@ sub top_level_domain_re {
     @_ == 1 || __PACKAGE__->badinvo;
     my($self) = shift;
 
+    # Updated from http://www.iana.org/domains/root/db/
     my $plain = join '|', qw(
-        aero
-        biz
-        com
-        coop
-        edu
-        gov
-        info
-        int
-        mil
-        museum
-        name
-        net
-        org
-        pro
+        AERO
+        ARPA
+        ASIA
+        BIZ
+        CAT
+        COM
+        COOP
+        EDU
+        GOV
+        INFO
+        INT
+        JOBS
+        MIL
+        MOBI
+        MUSEUM
+        NAME
+        NET
+        ORG
+        PRO
+        TEL
+        TRAVEL
     );
 
-    return qr/(?:[a-z]{2}|$plain)/;
+    return qr/(?:[a-z]{2}|$plain)/i;
 }
 
 =head1 AUTHOR

@@ -57,6 +57,8 @@ BEGIN {
     # ARGH!  URI::URL is inconsistant in how it normalizes URLs!
     # HTTP URLs get a trailing slash, FTP and gopher do not.
     %Tests = (
+          'Something something something.travel and stuff'
+              => [[ S => 'http://something.travel/' ]],
           '<URL:http://www.perl.com>' => 'http://www.perl.com/',
           '<ftp://ftp.site.org>'      => 'ftp://ftp.site.org',
           '<ftp.site.org>'            => [[ S => 'ftp://ftp.site.org' ]],

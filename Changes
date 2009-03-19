@@ -1,6 +1,6 @@
 Revision history for Perl module URI::Find.
 
-Next
+20090319  Thu Mar 19 12:17:53 PDT 2009
     Bug Fixes
     * Schemeless now ignores the case of the TLD.
 
@@ -12,6 +12,9 @@ Next
     * Add LICENSE section
     * Remove wildly out of date CAVEATS
     * Added an example of how to get a list of all URIs.
+    * Updated INSTALL section to reflect new dependencies and Module::Build
+      installation process
+    * Regenerated the README file
 
 
 20090316  Mon Mar 16 16:18:10 PDT 2009

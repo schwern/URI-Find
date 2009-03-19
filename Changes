@@ -39,6 +39,7 @@ Revision history for Perl module URI::Find.
       insensitive, as it should be and the docs claimed it was.  Thanks
       to Todd Eigenschink.
 
+
 0.15 Tue Mar 22 07:23:17 EST 2005
     - Have all functions croak if invoked with the wrong number of
       arguments.  Add URI::Find->badinvo.
@@ -52,11 +53,13 @@ Revision history for Perl module URI::Find.
         - Get $tldRe from a new class method, ->top_level_domain_re.
         - Update top level domain list.
 
+
 0.14 Sat Oct  9 08:20:04 EDT 2004
     - Add copyright notice.
     - Add ] to main $cruftSet, } to schemeless $cruftSet, for
       [http://square.com] and {brace.com}.
     - quotemeta() $cruftSet.
+
 
 0.13 Mon Jul  1 10:37:54 EDT 2002
     - Don't find any schemeless URIs with a plain URI::Find.  Previously
@@ -65,21 +68,26 @@ Revision history for Perl module URI::Find.
     - Have schemeless_to_schemed use http:// except in the specific case
       in which it uses ftp://.  Remove URI::Find::Schemeless's version.
 
+
 0.12 Wed Mar 20 14:39:21 EST 2002
     - Improve the "wrap each URI found in an HTML anchor" example.
     - Release a new version so CPAN sees the maintainer change.
+
 
 0.11 Thu Jul 26 14:43:49 EDT 2001
     - Michael passed the module to Roderick for maintenance.
     - Improve test suite.
     - Tweak URI::Find::Schemeless not to find Foo.p[ml].
 
+
 0.10  Mon Jul 10 20:14:08 EDT 2000
     - Rearchitected the internals to allow simple subclassing
     - Added URI::Find::Schemeless (thanks Roderick)
 
+
 0.04  Sat Feb 26 09:05:11 GMT 2000
     - Added # to the uric set of characters so HTML anchors are caught.
+
 
 0.03  Tue Feb  1 16:15:22 EST 2000
     - Added some heuristic discussion to the docs.
@@ -89,9 +97,11 @@ Revision history for Perl module URI::Find.
     - Handling the <URL:...> case better as suggested in RFC 2396 Apdx E
     - Added ; to the cruft heuristic
 
+
 0.02  Tue Feb  1 13:11:56 EST 2000
     - Added heuristic to handle 'URL:http://www.foo.com'
     - Added heuristic to handle trailing quotes.
+
 
 0.01  Mon Jan 31 19:12:23 EST 2000
     - First working version released to CPAN.

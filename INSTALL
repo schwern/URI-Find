@@ -8,19 +8,33 @@ HOW DO I INSTALL IT?
 To install this module, cd to the directory that contains this README
 file and type the following:
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+   perl Build.PL
+   ./Build
+   ./Build test
+   ./Build install
 
 To install this module into a specific directory, do:
-   perl Makefile.PL PREFIX=/name/of/the/directory
+   perl Build.PL --install_base /name/of/the/directory
    ...the rest is the same...
 
 Please also read the perlmodinstall man page, if available.
 
 
+WHAT VERSION OF PERL DO I NEED?
+
+        perl 5.6.0 or higher
+
+
 WHAT MODULES DO I NEED?
+
+To build, test and install the module you need:
+
+        Module::Build   0.30 or higher
+        Test::More      0.82 or higher
+
+To run the module you need:
 
         URI.pm          1.00 or higher
         URI::URL        5.00 or higher
+
+They can all be found on http://search.cpan.org/ or by running your CPAN shell.

@@ -130,6 +130,7 @@ sub find {
 
     my $uriRe = sprintf '(?:%s|%s)', $self->uri_re, $self->schemeless_uri_re;
 
+    #              1        2           3    4   5           6
     $$r_text =~ s{ (.*?) (?:(<(?:URL:)?)(.+?)(>)|($uriRe)) | (.+?)$ }{
         my $replace = '';
         if( defined $6 ) {

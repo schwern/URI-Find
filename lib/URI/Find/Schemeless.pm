@@ -73,7 +73,7 @@ sub schemeless_uri_re {
            }x;
 }
 
-=item B<top_level_domain_re>
+=head3 top_level_domain_re
 
   my $tld_re = $self->top_level_domain_re;
 

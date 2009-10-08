@@ -1,0 +1,68 @@
+Redesign Notes:
+
+Object should be configurable along these lines...
+
+* A list of valid schemes
+  * Avoid syntactically valid nonsense like "foo:bar"
+  * Default to some accepted list
+  * Mode to allow any possible scheme
+  * Case sensitive?
+
+* Schemeless options
+  * Boolean to control finding schemeless URLs?
+  * Map of prefixes to schemes
+      www => http
+      ftp => ftp
+      ''  => http
+  * List of allowed schemeless postfixes
+      Default to the ICANN list of TLDs
+
+* URL quoting regexes
+  * Whatever's inside the regex is accepted as a URL
+  * ie. URL:<[^>]+> and the like
+
+* Ignore regexes
+  * Regexes for URLs to always ignore
+  * Default of valid but nonsense URIs
+    * HTTP::Date
+
+* URL filters
+  * Post finding filters for the URLs
+  * Dropping trailing punctuation
+    * The web site is at http://www.foo.com. (drop the .)
+    * Allow balanced braces
+      * http://foo.com/a_(b) ok
+
+
+Features
+
+* Handle Unicode URLs and IDNA
+
+
+Output looks like...
+
+* Each found URI is put into an object which is...
+  * A subclass of URI (URI::Find::URI?) which adds...
+    * original matched text
+    * filtered text
+    * begin-pos
+    * end-pos
+  * The URI object is created from the filtered text
+
+Interface...
+
+* Inputs accepted (each with its own accessor)
+  * Strings
+  * String refs
+  * Files
+  * Filehandles
+
+* Document iterator
+  * Feed URI::Find a document and get back an iterator
+  * Iteration mode
+    * my $url = $iterator->next
+    * $iterator->reset (back to the start)
+    * my @urls = $iterator->all
+  * Traverse mode
+    * $iterator->find(\&code_to_run_on_each_url);
+

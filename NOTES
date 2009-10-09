@@ -37,6 +37,9 @@ Object should be configurable along these lines...
 Features
 
 * Handle Unicode URLs and IDNA
+* Catch the <...> case with whitespce inside.
+  "Using <> angle brackets around each URI is especially recommended as
+   a delimiting style for a reference that contains embedded whitespace."
 
 
 Output looks like...

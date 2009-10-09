@@ -112,6 +112,7 @@ has original_uri => (
     default     => sub { $_[0] }
 );
 
+
 =head3 begin_pos
 
 =head3 end_pos

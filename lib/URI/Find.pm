@@ -5,6 +5,7 @@ use warnings;
 
 use Mouse;
 use URI::Find::Types;
+use URI::Find::URI;
 
 our $VERSION = 20091006;
 
@@ -36,12 +37,80 @@ It'll work for URLs since they're a subset of URIs.
 
 =head1 METHODS
 
+=head3 new
+
+=head3 find_all
+
+  my @uris = $finder->find_all($text);
+
 =cut
+
+# Basic characters
+my $alpha       = qr{[a-z]}i;
+my $hexdigit    = qr{[\da-f]}i;
+my $gen_delims  = qr{[:/?#[\]@]};
+my $sub_delims  = qr{[!\$&'\(\)*+,;=]};
+my $unreserved  = qr{[A-Za-z0-9-._~]};
+my $pct_encoded = qr{ % $hexdigit{2} }x;
+my $path_char   = qr{$unreserved | $pct_encoded | $sub_delims | [:@] }x;
+
+# Path
+my $path        = qr{(?: / | $path_char )+ }x;
+
+# Query
+my $query       = $path;
+
+# Fragment
+my $fragment    = $path;
+
+# Host
+my $ipvfuture   = qr{ v $hexdigit+ \. (?: $unreserved | $sub_delims | : ) }x;
+my $ipv6address = qr{(?: $hexdigit | : )+ }x;         # cheating
+my $ipv4address = qr{ \d+ \. \d+ \. \d+ \. \d+ }x;               # cheating
+my $reg_name    = qr{ (?: $unreserved | $pct_encoded | $sub_delims )+ }x;
+my $ip_literal  = qr{\[ (?: $ipv6address | $ipvfuture ) \] }x;
+my $host        = qr{$ip_literal | $ipv4address | $reg_name}x;
+
+# Authority
+my $port        = qr{ \d+ }x;
+my $userinfo    = qr{(?: $unreserved | $pct_encoded | $sub_delims | : )+ }x;
+my $authority   = qr{(?:$userinfo \@)? $host (?: : $port)?}x;
+
+# Scheme
+my $scheme      = qr{$alpha (?:$alpha |\d | \+ | - | \. )*}x;
+
+# Hier
+my $hier_part   = qr{(?://)? $authority? $path?}x;
+
+# URI
+my $uri_schemeless = qr{$hier_part (?: \? $query)? (?:\# $fragment)?}x;
+my $uri         = qr{ $scheme : $uri_schemeless }x;
+
+
+sub find_all {
+    my $self = shift;
+    my $text = shift;
+
+    my @uris;
+    while($text =~ /($uri)/g) {
+        my $match = $1;
+
+        my $original_uri = URI->new($match);
+        my $uri = URI::Find::URI->new($self->decruft($match));
+
+        $uri->original_uri($original_uri);
+        $uri->end_pos(pos($text));
+        $uri->begin_pos(pos($text) - length $1);
+
+        push @uris, $uri;
+    }
+
+    return @uris;
+}
 
 has text => (
     is  => 'rw',
     isa => 'StrRef',
-    required => 1,
 );
 
 
@@ -71,13 +140,12 @@ nonsense.
 Defaults to the IANA registered list of schemes, permanent,
 provisional and historical plus a few common unregistered schemes:
 
+If empty then all schemes are accepted.
+
 =for note
 Keep in sync with data below
 
     irc
-
-Only used of C<<$finder->accept_all_schemes>> is false, which it is by
-default.
 
 =for note
 Add a simple way to get a more limited list of very common schemes: http, https, ftp...
@@ -187,23 +255,6 @@ sub default_accepted_schemes {
 }
 
 
-=head3 accept_all_schemes
-
-A boolean indicating whether all schemes should be accepted.
-
-If false C<<accepted_schemes()>> will be used to limit the URIs found.
-If true C<<accepted_schemes>> will be ignored.
-
-Defaults to false.
-
-=cut
-
-has accept_all_schemes => (
-    is          => 'rw',
-    isa         => 'Bool',
-    default     => 0,
-);
-
 =head3 case_sensitive_schemes
 
 If true C<<accepted_schemes()>> will be considered case sensitive.
@@ -285,7 +336,13 @@ sub default_scheme_map {
 
 =head3 allowed_schemeless_domains
 
+A list of filters of what domain names we'll accept as schemeless
+URIs.  This prevents every instance of "foo.bar" from being
+interpreted as a schemeless URI.
 
+Defaults to all the IANA accepted TLDs.
+
+If empty all domains are accepted.
 
 =cut
 
@@ -297,6 +354,308 @@ has allowed_schemeless_domains => (
     }
 );
 
+# Version 2009100600, Last Updated Tue Oct  6 07:07:33 2009 UTC
+my @TLDs = qw(
+AC
+AD
+AE
+AERO
+AF
+AG
+AI
+AL
+AM
+AN
+AO
+AQ
+AR
+ARPA
+AS
+ASIA
+AT
+AU
+AW
+AX
+AZ
+BA
+BB
+BD
+BE
+BF
+BG
+BH
+BI
+BIZ
+BJ
+BM
+BN
+BO
+BR
+BS
+BT
+BV
+BW
+BY
+BZ
+CA
+CAT
+CC
+CD
+CF
+CG
+CH
+CI
+CK
+CL
+CM
+CN
+CO
+COM
+COOP
+CR
+CU
+CV
+CX
+CY
+CZ
+DE
+DJ
+DK
+DM
+DO
+DZ
+EC
+EDU
+EE
+EG
+ER
+ES
+ET
+EU
+FI
+FJ
+FK
+FM
+FO
+FR
+GA
+GB
+GD
+GE
+GF
+GG
+GH
+GI
+GL
+GM
+GN
+GOV
+GP
+GQ
+GR
+GS
+GT
+GU
+GW
+GY
+HK
+HM
+HN
+HR
+HT
+HU
+ID
+IE
+IL
+IM
+IN
+INFO
+INT
+IO
+IQ
+IR
+IS
+IT
+JE
+JM
+JO
+JOBS
+JP
+KE
+KG
+KH
+KI
+KM
+KN
+KP
+KR
+KW
+KY
+KZ
+LA
+LB
+LC
+LI
+LK
+LR
+LS
+LT
+LU
+LV
+LY
+MA
+MC
+MD
+ME
+MG
+MH
+MIL
+MK
+ML
+MM
+MN
+MO
+MOBI
+MP
+MQ
+MR
+MS
+MT
+MU
+MUSEUM
+MV
+MW
+MX
+MY
+MZ
+NA
+NAME
+NC
+NE
+NET
+NF
+NG
+NI
+NL
+NO
+NP
+NR
+NU
+NZ
+OM
+ORG
+PA
+PE
+PF
+PG
+PH
+PK
+PL
+PM
+PN
+PR
+PRO
+PS
+PT
+PW
+PY
+QA
+RE
+RO
+RS
+RU
+RW
+SA
+SB
+SC
+SD
+SE
+SG
+SH
+SI
+SJ
+SK
+SL
+SM
+SN
+SO
+SR
+ST
+SU
+SV
+SY
+SZ
+TC
+TD
+TEL
+TF
+TG
+TH
+TJ
+TK
+TL
+TM
+TN
+TO
+TP
+TR
+TRAVEL
+TT
+TV
+TW
+TZ
+UA
+UG
+UK
+US
+UY
+UZ
+VA
+VC
+VE
+VG
+VI
+VN
+VU
+WF
+WS
+XN--0ZWM56D
+XN--11B5BS3A9AJ6G
+XN--80AKHBYKNJ4F
+XN--9T4B11YI5A
+XN--DEBA0AD
+XN--G6W251D
+XN--HGBK6AJ7F53BBA
+XN--HLCJ6AYA9ESC7A
+XN--JXALPDLP
+XN--KGBECHTV
+XN--ZCKZAH
+YE
+YT
+YU
+ZA
+ZM
+ZW
+);
+
+sub default_allowed_schemeless_domains {
+    return \@TLDs;
+}
+
+
+=head3 uri_quoting_patterns
+
+A list of filters of URI quoting styles.  The contents of these are
+*always* considered as a URI without regard for how the rest of
+URI::Find is configured.  Decrufting filters will be applied.
+
+The filter must return the text to be used as the URI without the
+quote.  For example, c<<qr{URL:(\S+)}>>.
+
+XXX Default?
+
+=cut
+
 has url_quoting_patterns => (
     is          => 'rw',
     isa         => 'ArrayRef',
@@ -304,6 +663,18 @@ has url_quoting_patterns => (
         $_[0]->default_url_quoting_patterns
     }
 );
+
+sub default_url_quoting_patterns {
+    return [];
+}
+
+=hea3 ignore_patterns
+
+A list of filters to always ignore.
+
+XXX Default?
+
+=cut
 
 has ignore_patterns => (
     is          => 'rw',
@@ -313,13 +684,79 @@ has ignore_patterns => (
     },
 );
 
-has uri_filters => (
+sub default_ignore_patterns {
+    return [];
+}
+
+=head3 decruft_filters
+
+Filters to apply to a matched URI to remove syntactically valid
+characters which where probably not intended as part of the URI.  For
+example, C<<(Look at http://www.example.com)>> would normally match
+C<<http://www.example.com)>> but the C<<)>> is not intended as part of
+the URI and would be removed.
+
+URIs found use the decrufted version, but the original text is still
+available as C<<$uri->original_uri>>.
+
+Defaults to as good a set of heuristics as we can manage.
+
+=cut
+
+has decruft_filters => (
     is          => 'rw',
     isa         => 'ArrayRef',
+    auto_deref  => 1,
     default     => sub {
-        $_[0]->default_uri_filters
+        $_[0]->default_decruft_filters
     },
 );
+
+my %puncs = (
+    ")"         => "(",
+    "}"         => "{",
+    "]"         => "[",
+    ">"         => "<",
+);
+my $end_puncs = "[". join("", map { "\\$_" } keys %puncs) . "]";
+$end_puncs = qr/$end_puncs/;
+
+sub default_decruft_filters {
+    return [
+        sub { $_[0] =~ s/[.,!?]$// },
+        sub {
+            return unless $_[0] =~ m{ ( $end_puncs ) $ }x;
+            my $punc = $1;
+            my $qpunc = quotemeta($punc);
+            $_[0] =~ s/$qpunc $//x unless URI::Find->is_balanced($_[0], $punc);
+        }
+    ];
+}
+
+sub is_balanced {
+    my($self, $text, $end) = @_;
+    my $start = $puncs{$end};
+
+    my $balance = 0;
+    while($text =~ /( \Q$start\E | \Q$end\E )/xg) {
+        $1 eq $start ? $balance++ : $balance--;
+        return 0 if $balance < 0;
+    }
+
+    return $balance == 0;
+}
+
+sub decruft {
+    my $self = shift;
+    my $uri = shift;
+
+    for my $filter ($self->decruft_filters) {
+        $filter->($uri);
+    }
+
+    return $uri;
+}
+
 
 =head1 SEE ALSO
 

@@ -1,25 +1,69 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More skip_all => "URI::Find doesn't work";
+use Test::More;
+use Test::Deep;
 
 use URI::Find;
 
-my @Tests = ({
-    have    => "http://foo.com",
-    want    => [{
-        original    => "http://foo.com",
-    }],
 
-    have    => "Welcome to HTTP://foo.com, Fool!",
-    want    => [{
-        original        => "HTTP://foo.com,",
-        filtered        => "HTTP://foo.com",
-        canonical       => "http://foo.com",
-        begin           => 11,
-        end             => 26,
-    }],
-});
+my @want_keys = qw(
+    original
+    filtered
+    begin
+    end
+);
+
+my %uri2have = (
+    original    => sub { $_[0]->original_uri },
+    filtered    => sub { $_[0] },
+    begin       => sub { $_[0]->begin_pos },
+    end         => sub { $_[0]->end_pos },
+);
+
+my %want_defaults = (
+    original    => sub { die "want must have an original" },
+    filtered    => sub { $_[0]->{original} },
+    begin       => sub { return 0 },
+    end         => sub { $_[0]->{begin} + length $_[0]->{original} },
+);
+
+
+my @Tests = (
+    {
+        have    => "http://foo.com",
+        want    => [{
+            original    => "http://foo.com",
+        }],
+    },
+
+    {
+        have    => "Welcome to HTTP://foo.com, Fool!",
+        want    => [{
+            original        => "HTTP://foo.com,",
+            filtered        => "HTTP://foo.com",
+            begin           => 11,
+            end             => 26,
+        }],
+    },
+
+    {
+        have    => "Hey (the site is at http://example.com) and junk",
+        want    => [{
+            original        => "http://example.com)",
+            filtered        => "http://example.com",
+            begin           => 20,
+        }],
+    },
+
+    {
+        have    => "Things and http://example.com/bar(foo)",
+        want    => [{
+            original        => "http://example.com/bar(foo)",
+            begin           => 11,
+        }],
+    }
+);
 
 my $find = URI::Find->new;
 for my $test (@Tests) {
@@ -30,45 +74,40 @@ for my $test (@Tests) {
 done_testing();
 
 
-sub uris_ok {
-    my($uris, $wants) = @_;
+sub unoverload {
+    my $list = shift;
 
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my @new;
+    for my $hash (@$list) {
+        my %new;
+        for my $key (keys %$hash) {
+            $new{$key} = "$hash->{$key}";
+        }
+        push @new, \%new;
+    }
 
-    my $haves = uris2haves($uris);
-    $wants = fill_in_wants($wants);
-    return is_deeply($haves, $wants) || diag explain({
-        have => $haves,
-        want => $wants,
-    });
+    return \@new;
 }
 
-
-my @want_keys = qw(
-    original
-    filtered
-    canonical
-    begin
-    end
-);
-
-my %want_defaults = (
-    original    => sub { die "want must have an original" },
-    filtered    => sub { $_[0]->{original} },
-    canonical   => sub { $_[0]->{filtered} },
-    begin       => sub { return 0 },
-    end         => sub { $_[0]->{begin} + length $_[0]->{original} },
-);
-
 sub fill_in_want_defaults {
-    my($want) = shift;
+    my $wants = shift;
+
+    my @new_wants;
+    for my $want (@$wants) {
+        push @new_wants, fill_in_want($want);
+    }
+
+    return \@new_wants;
+}
+
+sub fill_in_want {
+    my $want = shift;
     my %new_want;
 
     for my $key (@want_keys) {
         my $val = $want_defaults{$key};
-        $new_want{$key} =
-          defined $want->{$key} ? $want->{$key}
-                                : $val->($want);
+        $new_want{$key} = defined $want->{$key} ? $want->{$key}
+                                                : $val->(\%new_want);
     }
 
     return \%new_want;
@@ -82,11 +121,29 @@ sub uris2haves {
         my %have;
 
         for my $key (@want_keys) {
-            $have{$key} = $uri->$key();
+            $have{$key} = $uri2have{$key}->($uri);
         }
 
         push @haves, \%have;
     }
 
     return \@haves;
+}
+
+
+sub uris_ok {
+    my($uris, $wants) = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $haves = uris2haves($uris);
+    $wants = fill_in_want_defaults($wants);
+
+    $haves = unoverload($haves);
+    $wants = unoverload($wants);
+
+    return cmp_deeply($haves, $wants) || diag explain({
+        have => $haves,
+        want => $wants,
+    });
 }

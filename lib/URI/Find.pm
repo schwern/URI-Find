@@ -99,16 +99,17 @@ sub find_all {
     my $text = shift;
 
     my @uris;
-    while($text =~ /($uri)/g) {
+    SEARCH: while($text =~ /($uri)/g) {
         my $match = $1;
 
         my $original_uri = URI->new($match);
 
-        # Ignore URIs which are just a scheme like "http:"
-        next if $self->is_just_scheme($original_uri);
+        for my $filter ($self->ignore_filters) {
+            next SEARCH if $filter->($self, $original_uri);
+        }
 
         # Ignore URIs which are of an unrecognized scheme
-        next unless $self->has_accepted_scheme($original_uri);
+        next SEARCH unless $self->has_accepted_scheme($original_uri);
 
         # Decruft the URI
         my $uri = URI::Find::URI->new($self->decruft($match));
@@ -719,7 +720,7 @@ sub default_url_quoting_patterns {
     return [];
 }
 
-=hea3 ignore_patterns
+=hea3 ignore_filters
 
 A list of filters to always ignore.
 
@@ -727,16 +728,23 @@ XXX Default?
 
 =cut
 
-has ignore_patterns => (
+has ignore_filters => (
     is          => 'rw',
     isa         => 'ArrayRef',
+    auto_deref  => 1,
     default     => sub {
-        $_[0]->default_ignore_patterns
+        $_[0]->default_ignore_filters
     },
 );
 
-sub default_ignore_patterns {
-    return [];
+sub default_ignore_filters {
+    return [
+        # Just a scheme like "http:" and nothing else
+        sub { $_[0]->is_just_scheme($_[1]) },
+        
+        # Probably a Perl module
+        sub { $_[1] =~ qr/^\w+::\w+/ }
+    ];
 }
 
 =head3 decruft_filters

@@ -74,7 +74,13 @@ my @Tests = (
     {
         have    => "Something something http: Dark Side",
         want    => [],
-    }
+    },
+
+    # Ignore Perl modules
+    {
+        have    => "Get HTTP::Thing from CPAN!",
+        want    => [],
+    },
 );
 
 my $find = URI::Find->new;

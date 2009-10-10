@@ -62,6 +62,18 @@ my @Tests = (
             original        => "http://example.com/bar(foo)",
             begin           => 11,
         }],
+    },
+
+    # Test non-recognized schemes are ignored
+    {
+        have    => "invalidscheme://foo.com",
+        want    => [],
+    },
+
+    # Test URIs which are just a scheme (ie. "http:") are ignored
+    {
+        have    => "Something something http: Dark Side",
+        want    => [],
     }
 );
 

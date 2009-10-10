@@ -87,6 +87,13 @@ my $uri_schemeless = qr{$hier_part (?: \? $query)? (?:\# $fragment)?}x;
 my $uri         = qr{ $scheme : $uri_schemeless }x;
 
 
+sub is_just_scheme {
+    my $self = shift;
+    my $uri = shift;
+    return $uri =~ m/^$scheme :$/x;
+}
+
+
 sub find_all {
     my $self = shift;
     my $text = shift;
@@ -96,8 +103,17 @@ sub find_all {
         my $match = $1;
 
         my $original_uri = URI->new($match);
+
+        # Ignore URIs which are just a scheme like "http:"
+        next if $self->is_just_scheme($original_uri);
+
+        # Ignore URIs which are of an unrecognized scheme
+        next unless $self->has_accepted_scheme($original_uri);
+
+        # Decruft the URI
         my $uri = URI::Find::URI->new($self->decruft($match));
 
+        # Store context
         $uri->original_uri($original_uri);
         $uri->end_pos(pos($text));
         $uri->begin_pos(pos($text) - length $1);
@@ -156,9 +172,30 @@ has accepted_schemes => (
     is          => 'rw',
     isa         => 'ArrayRef',
     required    => 1,
-    default     => sub {
-        $_[0]->default_accepted_schemes
+    trigger     => sub {
+        $_[0]->cache_accepted_schemes($_[1]);
     },
+    default     => sub {
+        my $default = $_[0]->default_accepted_schemes;
+        $_[0]->cache_accepted_schemes($default);
+        return $default;
+    },
+);
+
+# Cache a hash of the schemes for quick lookup
+sub cache_accepted_schemes {
+    my $self = shift;
+    my $schemes = shift;
+
+    my %cache = map { $_ => 1 } @$schemes;
+    $self->accepted_schemes_cache(\%cache);
+
+    return;
+}
+
+has accepted_schemes_cache => (
+    is          => 'rw',
+    isa         => 'HashRef',
 );
 
 my @default_accepted_schemes = (
@@ -252,6 +289,20 @@ my @default_accepted_schemes = (
 
 sub default_accepted_schemes {
     return \@default_accepted_schemes;
+}
+
+sub has_accepted_scheme {
+    my $self = shift;
+    my $uri = shift;
+
+    my $scheme = $uri->scheme;
+    $scheme = lc $scheme unless $self->case_sensitive_schemes;
+
+    my $schemes = $self->accepted_schemes_cache();
+
+    return 1 unless keys %$schemes;
+    return 1 if $schemes->{$scheme};
+    return 0;
 }
 
 

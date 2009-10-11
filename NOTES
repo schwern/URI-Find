@@ -2,7 +2,7 @@ Redesign Notes:
 
 Object should be configurable along these lines...
 
-* A list of valid schemes
+DONE* A list of valid schemes
   * Avoid syntactically valid nonsense like "foo:bar"
   * Default to some accepted list
   * Mode to allow any possible scheme
@@ -21,12 +21,12 @@ Object should be configurable along these lines...
   * Whatever's inside the regex is accepted as a URL
   * ie. URL:<[^>]+> and the like
 
-* Ignore regexes
+DONE* Ignore regexes
   * Regexes for URLs to always ignore
   * Default of valid but nonsense URIs
     * HTTP::Date
 
-* URL filters
+DONE* URL filters
   * Post finding filters for the URLs
   * Dropping trailing punctuation
     * The web site is at http://www.foo.com. (drop the .)
@@ -37,14 +37,14 @@ Object should be configurable along these lines...
 Features
 
 * Handle Unicode URLs and IDNA
-* Catch the <...> case with whitespce inside.
+* Catch the <...> case with whitespace inside.
   "Using <> angle brackets around each URI is especially recommended as
    a delimiting style for a reference that contains embedded whitespace."
 
 
 Output looks like...
 
-* Each found URI is put into an object which is...
+DONE* Each found URI is put into an object which is...
   * A subclass of URI (URI::Find::URI?) which adds...
     * original matched text
     * filtered text

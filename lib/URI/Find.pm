@@ -84,8 +84,8 @@ my $hier_part   = qr{(?://)? $authority? $path?}x;
 
 # URI
 my $uri_schemeless = qr{$hier_part (?: \? $query)? (?:\# $fragment)?}x;
-my $uri         = qr{ $scheme : $uri_schemeless }x;
-
+my $uri            = qr{ $scheme : $uri_schemeless }x;
+my $uri_both       = qr{ (?:$scheme \:)? $uri_schemeless }x;
 
 sub is_just_scheme {
     my $self = shift;
@@ -99,20 +99,24 @@ sub find_all {
     my $text = shift;
 
     my @uris;
-    SEARCH: while($text =~ /($uri)/g) {
+    my $uri_regex = $self->accept_schemeless ? $uri_both : $uri;
+    SEARCH: while($text =~ /($uri_regex)/g) {
         my $match = $1;
 
         my $original_uri = URI->new($match);
+        my $uri = URI->new($original_uri);
+
+        $self->add_scheme($uri);
 
         for my $filter ($self->ignore_filters) {
-            next SEARCH if $filter->($self, $original_uri);
+            next SEARCH if $filter->($self, $uri);
         }
 
         # Ignore URIs which are of an unrecognized scheme
-        next SEARCH unless $self->has_accepted_scheme($original_uri);
+        next SEARCH unless $self->has_accepted_scheme($uri);
 
         # Decruft the URI
-        my $uri = URI::Find::URI->new($self->decruft($match));
+        $uri = URI::Find::URI->new($self->decruft($uri));
 
         # Store context
         $uri->original_uri($original_uri);
@@ -383,6 +387,26 @@ my %default_scheme_map = (
 );
 sub default_scheme_map {
     return \%default_scheme_map;
+}
+
+sub add_scheme {
+    my $self = shift;
+    my $uri  = shift;
+
+    return if $uri->scheme;
+
+    my $host = $uri->opaque;
+    return unless $host;
+
+    my($first_part) = $host =~ m{^ ([^\.]+) \. }x;
+    return unless defined $first_part;
+
+    my $scheme = $self->scheme_map->{$first_part};
+    return unless $scheme;
+
+    $uri->opaque("//$uri");
+    $uri->scheme($scheme);
+    return;
 }
 
 

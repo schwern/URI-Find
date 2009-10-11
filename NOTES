@@ -9,8 +9,8 @@ DONE* A list of valid schemes
   * Case sensitive?
 
 * Schemeless options
-  * Boolean to control finding schemeless URLs?
-  * Map of prefixes to schemes
+  DONE* Boolean to control finding schemeless URLs?
+  DONE* Map of prefixes to schemes
       www => http
       ftp => ftp
       ''  => http

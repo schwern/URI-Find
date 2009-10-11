@@ -81,6 +81,32 @@ my @Tests = (
         have    => "Get HTTP::Thing from CPAN!",
         want    => [],
     },
+
+    # Simple schemless
+    {
+        have    => "At www.example.com",
+        want    => [{
+            original    => "www.example.com",
+            filtered    => "http://www.example.com",
+            begin       => 3
+        }],
+    },
+
+    # FTP schemeless
+    {
+        have    => "At ftp.example.com and stuff",
+        want    => [{
+            original    => "ftp.example.com",
+            filtered    => "ftp://ftp.example.com",
+            begin       => 3
+        }],
+    },
+
+    # Ignore unrecognized host
+    {
+        have    => "At blah.stuff and stuff",
+        want    => [],
+    },
 );
 
 my $find = URI::Find->new;

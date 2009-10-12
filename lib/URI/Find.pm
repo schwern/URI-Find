@@ -175,7 +175,7 @@ Add a simple way to get a more limited list of very common schemes: http, https,
 
 has accepted_schemes => (
     is          => 'rw',
-    isa         => 'ArrayRef',
+    isa         => 'ArrayRef[Str]',
     required    => 1,
     trigger     => sub {
         $_[0]->cache_accepted_schemes($_[1]);
@@ -200,7 +200,7 @@ sub cache_accepted_schemes {
 
 has accepted_schemes_cache => (
     is          => 'rw',
-    isa         => 'HashRef',
+    isa         => 'HashRef[Bool]',
 );
 
 my @default_accepted_schemes = (
@@ -424,7 +424,7 @@ If empty all domains are accepted.
 
 has allowed_schemeless_domains => (
     is          => 'rw',
-    isa         => 'ArrayRef',
+    isa         => 'ArrayRef[Str]',
     default     => sub {
         $_[0]->default_allowed_schemeless_domains
     }
@@ -754,7 +754,7 @@ XXX Default?
 
 has ignore_filters => (
     is          => 'rw',
-    isa         => 'ArrayRef',
+    isa         => 'ArrayRef[CodeRef]',
     auto_deref  => 1,
     default     => sub {
         $_[0]->default_ignore_filters
@@ -788,7 +788,7 @@ Defaults to as good a set of heuristics as we can manage.
 
 has decruft_filters => (
     is          => 'rw',
-    isa         => 'ArrayRef',
+    isa         => 'ArrayRef[CodeRef]',
     auto_deref  => 1,
     default     => sub {
         $_[0]->default_decruft_filters

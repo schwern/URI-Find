@@ -117,11 +117,56 @@ my @Tests = (
             begin       => 3,
         }],
     },
+
+    # (uri) => uri
+    {
+        have    => 'Blah blah (example.com) blah',
+        want    => [{
+            original    => '(example.com)',
+            filtered    => 'http://example.com',
+            begin       => 10
+        }]
+    },
+
+    # (uri => uri
+    {
+        have    => 'Blah blah (example.com blah) blah',
+        want    => [{
+            original    => '(example.com',
+            filtered    => 'http://example.com',
+            begin       => 10
+        }]
+    },
+
+    # Bug from RFC 3490
+    {
+        have => <<'HAVE',
+   stored in domain names.  For example, an email address local part is
+   sometimes stored in a domain label (hostmaster@example.com would be
+   represented as hostmaster.example.com in the RDATA field of an SOA
+   record).  IDNA does not update the existing email standards, which
+HAVE
+        want => [
+          {
+            original => '(hostmaster@example.com',
+            filtered => 'mailto:hostmaster@example.com',
+            begin    => 110
+          },
+          {
+            original => 'hostmaster.example.com',
+            filtered => 'http://hostmaster.example.com',
+            begin    => 161,
+          }
+        ],
+        todo => 'foo@bar.com -> mailto:foo@bar.com mapping',
+     }
 );
 
 my $find = URI::Find->new;
 for my $test (@Tests) {
     my @uris = $find->find_all($test->{have});
+
+    local $TODO = $test->{todo};
     uris_ok(\@uris, $test->{want});
 }
 

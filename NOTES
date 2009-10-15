@@ -33,6 +33,12 @@ DONE* URL filters
     * Allow balanced braces
       * http://foo.com/a_(b) ok
 
+* Map foo@bar.com to mailto:foo@bar.com
+
+* Match IP Addresses
+  * IPv4
+  * IPv6
+
 
 Features
 

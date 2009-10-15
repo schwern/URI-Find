@@ -108,6 +108,10 @@ sub find_all {
         my $uri = URI->new($original_uri);
         my $has_scheme = !!$uri->scheme;
 
+        # Decruft before we modify the URI else the cruft might
+        # get embedded in the URI and hard to spot.
+        $uri = URI::Find::URI->new($self->decruft($uri));
+
         # Makes it easier to work with to add the scheme early
         $self->add_scheme($uri);
 
@@ -121,9 +125,6 @@ sub find_all {
 
         # Ignore URIs which are of an unrecognized scheme
         next SEARCH unless $self->has_accepted_scheme($uri);
-
-        # Decruft the URI
-        $uri = URI::Find::URI->new($self->decruft($uri));
 
         # Store context
         $uri->original_uri($original_uri);
@@ -799,18 +800,40 @@ has decruft_filters => (
     },
 );
 
-my %puncs = (
-    ")"         => "(",
-    "}"         => "{",
-    "]"         => "[",
-    ">"         => "<",
+my %start2end_puncs = (
+    "("         => ")",
+    "{"         => "}",
+    "["         => "]",
+    "<"         => ">",
 );
-my $end_puncs = "[". join("", map { "\\$_" } keys %puncs) . "]";
+
+my %end2start_puncs = %{ _reverse_hash(\%start2end_puncs) };
+
+my $start_puncs = "[". join("", map { "\\$_" } keys %start2end_puncs) . "]";
+$start_puncs = qr/$start_puncs/;
+
+my $end_puncs = "[". join("", map { "\\$_" } keys %end2start_puncs) . "]";
 $end_puncs = qr/$end_puncs/;
+
+sub _reverse_hash {
+    my $hash = shift;
+
+    return +{ map { $hash->{$_} => $_ } keys %$hash };
+}
+
 
 sub default_decruft_filters {
     return [
-        sub { $_[0] =~ s/[.,!?]$// },
+        # url, => url
+        sub { $_[0] =~ s{ [.,!?]$ }{}x },
+
+        # (url => url
+        sub {
+            $_[0] =~ s{ ^ $start_puncs }{}x;
+        },
+
+        # url) => url
+        # url(foo) => url(foo)
         sub {
             return unless $_[0] =~ m{ ( $end_puncs ) $ }x;
             my $punc = $1;
@@ -822,7 +845,7 @@ sub default_decruft_filters {
 
 sub is_balanced {
     my($self, $text, $end) = @_;
-    my $start = $puncs{$end};
+    my $start = $end2start_puncs{$end};
 
     my $balance = 0;
     while($text =~ /( \Q$start\E | \Q$end\E )/xg) {

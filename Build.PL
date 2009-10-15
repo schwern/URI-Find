@@ -13,12 +13,14 @@ my $build = Module::Build->new(
 
     build_requires      => {
         Test::More      => '0.88',
+        Test::Deep      => 0,
         Module::Build   => '0.30',
     },
 
     requires            => {
         perl            => '5.8.1',
         URI             => '1.00',
+        Mouse           => '0.37',
     },
 
     license             => 'perl',

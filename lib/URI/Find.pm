@@ -102,11 +102,18 @@ sub find_all {
     my $uri_regex = $self->accept_schemeless ? $uri_both : $uri;
     SEARCH: while($text =~ /($uri_regex)/g) {
         my $match = $1;
+        next SEARCH unless $match =~ /\S/;
 
         my $original_uri = URI->new($match);
         my $uri = URI->new($original_uri);
+        my $has_scheme = !!$uri->scheme;
 
+        # Makes it easier to work with to add the scheme early
         $self->add_scheme($uri);
+
+        # Ignore schemeless with unknown domains
+        next SEARCH if !$has_scheme and
+                       !$self->has_allowed_domain($uri);
 
         for my $filter ($self->ignore_filters) {
             next SEARCH if $filter->($self, $uri);
@@ -121,7 +128,7 @@ sub find_all {
         # Store context
         $uri->original_uri($original_uri);
         $uri->end_pos(pos($text));
-        $uri->begin_pos(pos($text) - length $1);
+        $uri->begin_pos(pos($text) - length $match);
 
         push @uris, $uri;
     }
@@ -348,7 +355,7 @@ The key can take several forms...
     empty string  Its value is the default scheme to be used when
                   nothing else matches
 
-Defaults to a reasonable mapping.
+Defaults to a reasonable mapping, unknowns are taken as HTTP.
 
 =cut
 
@@ -365,6 +372,7 @@ my %default_scheme_map = (
     ftp         => 'ftp',
     irc         => 'irc',
     news        => 'news',
+    ''          => 'http',
 );
 sub default_scheme_map {
     return \%default_scheme_map;
@@ -382,8 +390,10 @@ sub add_scheme {
     my($first_part) = $host =~ m{^ ([^\.]+) \. }x;
     return unless defined $first_part;
 
-    my $scheme = $self->scheme_map->{$first_part};
-    return unless $scheme;
+    my $scheme_map = $self->scheme_map;
+    my $scheme = $scheme_map->{$first_part};
+    $scheme = $scheme_map->{""} unless defined $scheme;
+    return unless defined $scheme;
 
     $uri->opaque("//$uri");
     $uri->scheme($scheme);
@@ -698,6 +708,18 @@ ZW
 
 sub default_allowed_schemeless_domains {
     return \@TLDs;
+}
+
+
+sub has_allowed_domain {
+    my $self = shift;
+    my $uri  = shift;
+
+    my $host = eval { $uri->host; };
+    return unless defined $host;
+
+    my($tld) = $host =~ m{ \. ([^\.]+) $}x;
+    return $self->allowed_schemeless_domains->{uc $tld} ? 1 : 0;
 }
 
 

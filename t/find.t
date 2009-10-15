@@ -102,10 +102,20 @@ my @Tests = (
         }],
     },
 
-    # Ignore unrecognized host
+    # Ignore unrecognized domain
     {
         have    => "At blah.stuff and stuff",
         want    => [],
+    },
+
+    # Ok domain
+    {
+        have    => "At blah.com and stuff",
+        want    => [{
+            original    => 'blah.com',
+            filtered    => 'http://blah.com',
+            begin       => 3,
+        }],
     },
 );
 

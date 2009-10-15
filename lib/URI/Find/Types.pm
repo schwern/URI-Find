@@ -16,4 +16,13 @@ subtype 'StrRef'
   => as 'ScalarRef',
   => where { !ref $$_ };
 
+subtype 'ListHash'
+  => as 'HashRef[Bool]';
+
+coerce 'ListHash'
+  => from 'ArrayRef'
+  => via sub {
+      return +{ map { $_ => 1 } @$_ }
+  };
+
 1;

@@ -175,32 +175,13 @@ Add a simple way to get a more limited list of very common schemes: http, https,
 
 has accepted_schemes => (
     is          => 'rw',
-    isa         => 'ArrayRef[Str]',
+    isa         => 'ListHash',
     required    => 1,
-    trigger     => sub {
-        $_[0]->cache_accepted_schemes($_[1]);
-    },
+    coerce      => 1,
+    writer      => 'set_accepted_schemes',
     default     => sub {
-        my $default = $_[0]->default_accepted_schemes;
-        $_[0]->cache_accepted_schemes($default);
-        return $default;
+        $_[0]->default_accepted_schemes;
     },
-);
-
-# Cache a hash of the schemes for quick lookup
-sub cache_accepted_schemes {
-    my $self = shift;
-    my $schemes = shift;
-
-    my %cache = map { $_ => 1 } @$schemes;
-    $self->accepted_schemes_cache(\%cache);
-
-    return;
-}
-
-has accepted_schemes_cache => (
-    is          => 'rw',
-    isa         => 'HashRef[Bool]',
 );
 
 my @default_accepted_schemes = (
@@ -303,7 +284,7 @@ sub has_accepted_scheme {
     my $scheme = $uri->scheme;
     $scheme = lc $scheme unless $self->case_sensitive_schemes;
 
-    my $schemes = $self->accepted_schemes_cache();
+    my $schemes = $self->accepted_schemes();
 
     return 1 unless keys %$schemes;
     return 1 if $schemes->{$scheme};
@@ -424,7 +405,8 @@ If empty all domains are accepted.
 
 has allowed_schemeless_domains => (
     is          => 'rw',
-    isa         => 'ArrayRef[Str]',
+    isa         => 'ListHash',
+    coerce      => 1,
     default     => sub {
         $_[0]->default_allowed_schemeless_domains
     }

@@ -1,3 +1,4 @@
+bin/urifind
 Build.PL
 Changes
 INSTALL
@@ -9,5 +10,6 @@ MANIFEST.SKIP
 NOTES
 t/00compile.t
 t/find.t
+t/is_balanced.t
 t/uri.t
 TODO

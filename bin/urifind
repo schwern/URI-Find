@@ -1,0 +1,27 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use URI::Find;
+
+print join "\n", URI::Find->new->find_all(join "", <>);
+
+
+=head1 NAME
+
+urifind - Find all URIs in a document
+
+=head1 SYNOPSIS
+
+    urifind <file> ...
+
+=head1 DESCRIPTION
+
+Prints each URI found in a file.
+
+=head1 SEE ALSO
+
+L<URI::Find>
+
+=cut

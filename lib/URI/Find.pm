@@ -420,6 +420,7 @@ sub add_scheme {
     return $uri unless $host;
 
     my($first_part) = $host =~ m{^ ([^\.]+) }x;
+    $first_part = '' unless defined $first_part;
 
     # What scheme should we use?
     my $scheme_map = $self->scheme_map;

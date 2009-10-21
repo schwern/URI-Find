@@ -63,18 +63,42 @@ my $query       = $path;
 # Fragment
 my $fragment    = $path;
 
-# Host
+# IPvFuture
 my $ipvfuture   = qr{ v $hexdigit+ \. (?: $unreserved | $sub_delims | : ) }x;
-my $ipv6address = qr{(?: $hexdigit | : )+ }x;         # cheating
-my $ipv4address = qr{ \d+ \. \d+ \. \d+ \. \d+ }x;               # cheating
+
+# IPv4
+# Must go from longest to shortest else it'll only match 1 in 128.
+my $dec_octet   = qr{ 25[0-5] | 2[0-4]\d | 1\d\d | [1-9]\d | \d  }x;       # 1 - 255
+my $ipv4_address = qr{(?: $dec_octet \. ){3} $dec_octet }x;
+
+# IPv6
+my $ipv6_16     = qr{$hexdigit{1,4}}x;
+my $ipv6_32     = qr{(?: $ipv6_16 : $ipv6_16 ) | $ipv4_address }x;
+my $ipv6_address= qr{
+                                                (?: $ipv6_16 : ){6} $ipv6_32        |
+                                             :: (?: $ipv6_16 : ){5} $ipv6_32        |
+       (?:                       $ipv6_16 )? :: (?: $ipv6_16 : ){4} $ipv6_32        |
+       (?: (?: $ipv6_16 : ){0,1} $ipv6_16 )? :: (?: $ipv6_16 : ){3} $ipv6_32        |
+       (?: (?: $ipv6_16 : ){0,2} $ipv6_16 )? :: (?: $ipv6_16 : ){2} $ipv6_32        |
+       (?: (?: $ipv6_16 : ){0,3} $ipv6_16 )? :: (?: $ipv6_16 : ){1} $ipv6_32        |
+       (?: (?: $ipv6_16 : ){0,4} $ipv6_16 )? ::                     $ipv6_32        |
+       (?: (?: $ipv6_16 : ){0,5} $ipv6_16 )? ::                     $ipv6_16        |
+       (?: (?: $ipv6_16 : ){0,6} $ipv6_16 )? ::
+}x;
+
+# Hostname
 my $reg_name    = qr{ (?: $unreserved | $pct_encoded | $sub_delims )+ }x;
-my $ip_literal  = qr{\[ (?: $ipv6address | $ipvfuture ) \] }x;
-my $host        = qr{$ip_literal | $ipv4address | $reg_name}x;
+my $dotted_domain = qr{(?: $reg_name \. ){1,} $reg_name}x;        # foo.bar
+my $ip_literal  = qr{\[ (?: $ipv6_address | $ipvfuture ) \] }x;
+my $host        = qr{$ip_literal | $ipv4_address | $reg_name}x;
+# A more restricted version for schemeless searches
+my $dotted_host = qr{$ip_literal | $ipv4_address | $dotted_domain}x;
 
 # Authority
 my $port        = qr{ \d+ }x;
 my $userinfo    = qr{(?: $unreserved | $pct_encoded | $sub_delims | : )+ }x;
-my $authority   = qr{(?:$userinfo \@)? $host (?: : $port)?}x;
+my $authority        = qr{(?:$userinfo \@)? $host        (?: : $port)?}x;
+my $dotted_authority = qr{(?:$userinfo \@)? $dotted_host (?: :$port)?}x;
 
 # Scheme
 my $scheme      = qr{$alpha (?:$alpha |\d | \+ | - | \. )*}x;
@@ -83,9 +107,12 @@ my $scheme      = qr{$alpha (?:$alpha |\d | \+ | - | \. )*}x;
 my $hier_part   = qr{(?://)? $authority? $path?}x;
 
 # URI
-my $uri_schemeless = qr{$hier_part (?: \? $query)? (?:\# $fragment)?}x;
-my $uri            = qr{ $scheme : $uri_schemeless }x;
-my $uri_both       = qr{ (?:$scheme \:)? $uri_schemeless }x;
+my $uri_schemeless = qr{(?:
+    (?: $dotted_authority $path? (?: \? $query)? (?:\# $fragment)?) |
+    $ipv6_address       # otherwise this has to be in brackets
+)}x;
+my $uri            = qr{(?: $scheme : $hier_part (?: \? $query)? (?:\# $fragment)? )}x;
+my $uri_both       = qr{(?: $uri | $uri_schemeless )}x;
 
 sub is_just_scheme {
     my $self = shift;
@@ -113,7 +140,7 @@ sub find_all {
         $uri = URI::Find::URI->new($self->decruft($uri));
 
         # Makes it easier to work with to add the scheme early
-        $self->add_scheme($uri);
+        $uri = $self->add_scheme($uri);
 
         # Ignore schemeless with unknown domains
         next SEARCH if !$has_scheme and
@@ -383,22 +410,26 @@ sub add_scheme {
     my $self = shift;
     my $uri  = shift;
 
-    return if $uri->scheme;
+    return $uri if $uri->scheme;
 
     my $host = $uri->opaque;
-    return unless $host;
+    return $uri unless $host;
 
-    my($first_part) = $host =~ m{^ ([^\.]+) \. }x;
-    return unless defined $first_part;
+    my($first_part) = $host =~ m{^ ([^\.]+) }x;
 
+    # What scheme should we use?
     my $scheme_map = $self->scheme_map;
     my $scheme = $scheme_map->{$first_part};
     $scheme = $scheme_map->{""} unless defined $scheme;
-    return unless defined $scheme;
+    return $uri unless defined $scheme;
 
-    $uri->opaque("//$uri");
-    $uri->scheme($scheme);
-    return;
+    # IPv6 addresses go in brackets
+    my $copy = $uri;
+    $copy =~ s{ ($ipv6_address) }{\[$1\]}x;
+
+    # Add the scheme
+    $copy = "$scheme://$copy";
+    return URI::Find::URI->new($copy);
 }
 
 
@@ -719,8 +750,20 @@ sub has_allowed_domain {
     my $host = eval { $uri->host; };
     return unless defined $host;
 
+    # URI doesn't strip the [] from around IPv6 addresses
+    $host =~ s{ \[ ($ipv6_address) \] }{$1}x;
+
+    return 1 if $self->is_ip_address($host);
+
     my($tld) = $host =~ m{ \. ([^\.]+) $}x;
     return $self->allowed_schemeless_domains->{uc $tld} ? 1 : 0;
+}
+
+sub is_ip_address {
+    my $self = shift;
+    my $thing = shift;
+
+    return $thing =~ m{^(?: $ipv4_address | $ipv6_address )$}x;
 }
 
 

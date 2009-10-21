@@ -159,11 +159,45 @@ HAVE
           }
         ],
         todo => 'foo@bar.com -> mailto:foo@bar.com mapping',
-     }
+    },
+
+    # Bare IPv4 address
+    {
+        have => "blah blah 12.23.45.67 and 345.257.11.0 and 1.2.3.258",
+        want => [{
+            original    => '12.23.45.67',
+            filtered    => 'http://12.23.45.67',
+            begin       => 10,
+        }],
+    },
+
+    # Bare IPv6 address
+    {
+        have => "blah blah ::ffff:192.0.2.128 and 2001:0db8:1234:0000:0000:0000:0000:0000 and ::1",
+        want => [
+          {
+            original    => '::ffff:192.0.2.128',
+            filtered    => 'http://[::ffff:192.0.2.128]',
+            begin       => 10,
+          },
+          {
+            original    => '2001:0db8:1234:0000:0000:0000:0000:0000',
+            filtered    => 'http://[2001:0db8:1234:0000:0000:0000:0000:0000]',
+            begin       => 33,
+          },
+          {
+            original    => '::1',
+            filtered    => 'http://[::1]',
+            begin       => 77,
+          }
+        ],
+    }
 );
 
 my $find = URI::Find->new;
-for my $test (@Tests) {
+
+my @tests = @ARGV ? $Tests[shift()-1] : @Tests;
+for my $test (@tests) {
     my @uris = $find->find_all($test->{have});
 
     local $TODO = $test->{todo};

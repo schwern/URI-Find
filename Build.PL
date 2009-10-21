@@ -20,7 +20,7 @@ my $build = Module::Build->new(
     requires            => {
         perl            => '5.8.1',
         URI             => '1.00',
-        Mouse           => '0.37',
+        Mouse           => '0.40',
     },
 
     license             => 'perl',

@@ -50,7 +50,8 @@ my $alpha       = qr{[a-z]}i;
 my $hexdigit    = qr{[\da-f]}i;
 my $gen_delims  = qr{[:/?#[\]@]};
 my $sub_delims  = qr{[!\$&'\(\)*+,;=]};
-my $unreserved  = qr{[A-Za-z0-9-._~]};
+# consider everything above 7-bit ASCII unreserved to allow for Unicode
+my $unreserved  = qr{[A-Za-z0-9-._~\x{0080}-\x{FFFF}]};
 my $pct_encoded = qr{ % $hexdigit{2} }x;
 my $path_char   = qr{$unreserved | $pct_encoded | $sub_delims | [:@] }x;
 
@@ -62,6 +63,9 @@ my $query       = $path;
 
 # Fragment
 my $fragment    = $path;
+
+# RFC 3490 3.1.1 about dot seperators
+my $idna_sep    = qr{ [\x{002E}\x{3002}\x{FF0E}\x{FF61}] }x;
 
 # IPvFuture
 my $ipvfuture   = qr{ v $hexdigit+ \. (?: $unreserved | $sub_delims | : ) }x;
@@ -88,7 +92,7 @@ my $ipv6_address= qr{
 
 # Hostname
 my $reg_name    = qr{ (?: $unreserved | $pct_encoded | $sub_delims )+ }x;
-my $dotted_domain = qr{(?: $reg_name \. ){1,} $reg_name}x;        # foo.bar
+my $dotted_domain = qr{(?: $reg_name $idna_sep ){1,} $reg_name}x;        # foo.bar
 my $ip_literal  = qr{\[ (?: $ipv6_address | $ipvfuture ) \] }x;
 my $host        = qr{$ip_literal | $ipv4_address | $reg_name}x;
 # A more restricted version for schemeless searches
@@ -131,8 +135,8 @@ sub find_all {
         my $match = $1;
         next SEARCH unless $match =~ /\S/;
 
-        my $original_uri = URI->new($match);
-        my $uri = URI->new($original_uri);
+        my $original_uri = URI::Find::URI->new($match);
+        my $uri = URI::Find::URI->new($original_uri);
         my $has_scheme = !!$uri->scheme;
 
         # Decruft before we modify the URI else the cruft might

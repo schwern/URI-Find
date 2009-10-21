@@ -2,6 +2,7 @@ package URI::Find::URI;
 
 use Mouse;
 use URI::Find::Types;
+use URI::Escape;
 
 
 =head1 NAME
@@ -79,6 +80,11 @@ sub _obj_eq {
 # Change new() to take just the URI
 sub BUILDARGS {
     my($class, $uri) = @_;
+
+    # I don't want URI to escape anything, but there's no way to turn it off.
+    # So blot out URI::Escape::escape_char().
+    no warnings 'redefine';
+    local *URI::Escape::escape_char = sub { return $_[0] };
 
     return {
         _delegate => $Delegate_Class->new($uri)

@@ -191,6 +191,15 @@ HAVE
             begin       => 77,
           }
         ],
+    },
+
+    # IDNA
+    {
+        have => "At http://➡.ws/᛽ and stuff",
+        want => [{
+            original => "http://➡.ws/᛽",
+            begin    => 3
+        }],
     }
 );
 

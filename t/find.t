@@ -193,6 +193,12 @@ HAVE
         ],
     },
 
+    # Ignore the unspecified IPv6 address (see RFC 2373 2.5.2)
+    {
+        have => "Stuff and :: things",
+        want => []
+    },
+
     # IDNA
     {
         have => "At http://➡.ws/᛽ and stuff",

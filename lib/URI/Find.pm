@@ -852,6 +852,8 @@ my %start2end_puncs = (
     "{"         => "}",
     "["         => "]",
     "<"         => ">",
+    q[']        => q['],
+    q["]        => q["],
 );
 
 my %end2start_puncs = %{ _reverse_hash(\%start2end_puncs) };
@@ -875,8 +877,14 @@ sub default_decruft_filters {
         sub { $_[0] =~ s{ [.,!?]$ }{}x },
 
         # (url => url
+        # (url) => url
         sub {
-            $_[0] =~ s{ ^ $start_puncs }{}x;
+            $_[0] =~ s{ ^ ($start_puncs) }{}x;
+            return unless defined $1;
+
+            my $end_punc = $start2end_puncs{$1};
+            my $qend_punc = quotemeta($end_punc);
+            $_[0] =~ s{ $qend_punc $}{}x;
         },
 
         # url) => url

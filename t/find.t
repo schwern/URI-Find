@@ -198,25 +198,28 @@ HAVE
     {
         have => q["g.." = "http://a/b/c/g.."],
         want => [{
-            original => "http://a/b/c/g..",
+            original => q["http://a/b/c/g.."],
+            decrufted=> q[http://a/b/c/g..],
+            filtered => q[http://a/b/c/g..],
         }],
         todo => "URIs inside double quotes shouldn't be decrufted",
     },
 
     # Issues with hosts and IP addresses surrounded by quotes.
     {
-        todo => "Proper stripping of quoted URIs",
         have => <<'END',
    might lead a human user to assume that the host is 'cnn.example.com',
    whereas it is actually '10.0.0.1'.  Note that a misleading userinfo
 END
         want => [
           {
-            original => "cnn.example.com",
+            original => "'cnn.example.com',",
+            decrufted=> "cnn.example.com",
             filtered => "http://cnn.example.com",
           },
           {
-            original => "10.0.0.1",
+            original => "'10.0.0.1'.",
+            decrufted=> "10.0.0.1",
             filtered => "http://10.0.0.1",
           },
         ],

@@ -35,14 +35,14 @@ DONE* URL filters
 
 * Map foo@bar.com to mailto:foo@bar.com
 
-* Match IP Addresses
+DONE * Match IP Addresses
   * IPv4
   * IPv6
 
 
 Features
 
-* Handle Unicode URLs and IDNA
+DONE * Handle Unicode URLs and IDNA
 * Catch the <...> case with whitespace inside.
   "Using <> angle brackets around each URI is especially recommended as
    a delimiting style for a reference that contains embedded whitespace."
@@ -53,7 +53,8 @@ Output looks like...
 DONE* Each found URI is put into an object which is...
   * A subclass of URI (URI::Find::URI?) which adds...
     * original matched text
-    * filtered text
+    * decrufted text
+    * filtered URI
     * begin-pos
     * end-pos
   * The URI object is created from the filtered text

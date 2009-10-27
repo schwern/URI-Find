@@ -198,11 +198,10 @@ HAVE
     {
         have => q["g.." = "http://a/b/c/g.."],
         want => [{
-            original => q["http://a/b/c/g.."],
+            original => q[http://a/b/c/g..],
             decrufted=> q[http://a/b/c/g..],
             filtered => q[http://a/b/c/g..],
         }],
-        todo => "URIs inside double quotes shouldn't be decrufted",
     },
 
     # Issues with hosts and IP addresses surrounded by quotes.

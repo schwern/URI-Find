@@ -131,7 +131,9 @@ sub find_all {
 
     my @uris;
     my $uri_regex = $self->accept_schemeless ? $uri_both : $uri;
-    SEARCH: while($text =~ /($uri_regex)/g) {
+    SEARCH: while($text =~ /( ['"<]? $uri_regex ['">]? )/gx) {
+        $DB::single = 1;
+
         my $match = $1;
         next SEARCH unless $match =~ /\S/;
 
@@ -780,20 +782,36 @@ URI::Find is configured.  Decrufting filters will be applied.
 The filter must return the text to be used as the URI without the
 quote.  For example, c<<qr{URL:(\S+)}>>.
 
-XXX Default?
-
 =cut
 
-has url_quoting_patterns => (
+has uri_quoting_patterns => (
     is          => 'rw',
-    isa         => 'ArrayRef',
+    isa         => 'ArrayRef[Regexp]',
+    auto_deref  => 1,
     default     => sub {
-        $_[0]->default_url_quoting_patterns
+        $_[0]->default_uri_quoting_patterns
     }
 );
 
-sub default_url_quoting_patterns {
-    return [];
+sub default_uri_quoting_patterns {
+    return [
+        qr/^< ([^>]+) >$/x,
+        qr/^" ([^"]+) "$/x,
+        qr/^' ([^']+) '$/x,
+    ];
+}
+
+sub dequote {
+    my $self = shift;
+    my $uri  = shift;
+
+    $DB::single = 1;
+    for my $pattern ($self->uri_quoting_patterns) {
+        next unless $uri =~ $pattern;
+        return $1;
+    }
+
+    return;
 }
 
 =hea3 ignore_filters
@@ -914,6 +932,9 @@ sub is_balanced {
 sub decruft {
     my $self = shift;
     my $uri = shift;
+
+    my $dequote = $self->dequote($uri);
+    return $dequote if defined $dequote;
 
     for my $filter ($self->decruft_filters) {
         $filter->($uri);

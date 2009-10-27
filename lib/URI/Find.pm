@@ -135,13 +135,10 @@ sub find_all {
         my $match = $1;
         next SEARCH unless $match =~ /\S/;
 
-        my $original_uri = URI::Find::URI->new($match);
-        my $uri = URI::Find::URI->new($original_uri);
+        my $original_uri  = URI::Find::URI->new($match);
+        my $decrufted_uri = URI::Find::URI->new($self->decruft($match));
+        my $uri           = URI::Find::URI->new($decrufted_uri);
         my $has_scheme = !!$uri->scheme;
-
-        # Decruft before we modify the URI else the cruft might
-        # get embedded in the URI and hard to spot.
-        $uri = URI::Find::URI->new($self->decruft($uri));
 
         # Makes it easier to work with to add the scheme early
         $uri = $self->add_scheme($uri);
@@ -158,7 +155,9 @@ sub find_all {
         next SEARCH unless $self->has_accepted_scheme($uri);
 
         # Store context
+        $uri = URI::Find::URI->new($uri);
         $uri->original_uri($original_uri);
+        $uri->decrufted_uri($decrufted_uri);
         $uri->end_pos(pos($text));
         $uri->begin_pos(pos($text) - length $match);
 

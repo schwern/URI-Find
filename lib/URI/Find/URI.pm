@@ -119,6 +119,19 @@ has original_uri => (
 );
 
 
+=head3 decrufted_uri
+
+The original URI after decrufting but before any further modification.
+
+=cut
+
+has decrufted_uri => (
+    is          => 'rw',
+    isa         => 'URI',
+    default     => sub { $_[0] }
+);
+
+
 =head3 begin_pos
 
 =head3 end_pos

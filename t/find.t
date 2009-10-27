@@ -10,22 +10,19 @@ use URI::Find;
 my @want_keys = qw(
     original
     filtered
-    begin
-    end
+    decrufted
 );
 
 my %uri2have = (
     original    => sub { $_[0]->original_uri },
     filtered    => sub { $_[0] },
-    begin       => sub { $_[0]->begin_pos },
-    end         => sub { $_[0]->end_pos },
+    decrufted   => sub { $_[0]->decrufted_uri },
 );
 
 my %want_defaults = (
     original    => sub { die "want must have an original" },
     filtered    => sub { $_[0]->{original} },
-    begin       => sub { return 0 },
-    end         => sub { $_[0]->{begin} + length $_[0]->{original} },
+    decrufted   => sub { $_[0]->{original} },
 );
 
 
@@ -41,9 +38,8 @@ my @Tests = (
         have    => "Welcome to HTTP://foo.com, Fool!",
         want    => [{
             original        => "HTTP://foo.com,",
+            decrufted       => "HTTP://foo.com",
             filtered        => "HTTP://foo.com",
-            begin           => 11,
-            end             => 26,
         }],
     },
 
@@ -51,8 +47,8 @@ my @Tests = (
         have    => "Hey (the site is at http://example.com) and junk",
         want    => [{
             original        => "http://example.com)",
+            decrufted       => "http://example.com",
             filtered        => "http://example.com",
-            begin           => 20,
         }],
     },
 
@@ -60,7 +56,6 @@ my @Tests = (
         have    => "Things and http://example.com/bar(foo)",
         want    => [{
             original        => "http://example.com/bar(foo)",
-            begin           => 11,
         }],
     },
 
@@ -88,7 +83,6 @@ my @Tests = (
         want    => [{
             original    => "www.example.com",
             filtered    => "http://www.example.com",
-            begin       => 3
         }],
     },
 
@@ -98,7 +92,6 @@ my @Tests = (
         want    => [{
             original    => "ftp.example.com",
             filtered    => "ftp://ftp.example.com",
-            begin       => 3
         }],
     },
 
@@ -114,7 +107,6 @@ my @Tests = (
         want    => [{
             original    => 'blah.com',
             filtered    => 'http://blah.com',
-            begin       => 3,
         }],
     },
 
@@ -123,8 +115,8 @@ my @Tests = (
         have    => 'Blah blah (example.com) blah',
         want    => [{
             original    => '(example.com)',
+            decrufted   => 'example.com',
             filtered    => 'http://example.com',
-            begin       => 10
         }]
     },
 
@@ -133,8 +125,8 @@ my @Tests = (
         have    => 'Blah blah (example.com blah) blah',
         want    => [{
             original    => '(example.com',
+            decrufted   => 'example.com',
             filtered    => 'http://example.com',
-            begin       => 10
         }]
     },
 
@@ -149,13 +141,12 @@ HAVE
         want => [
           {
             original => '(hostmaster@example.com',
+            decrufted=> 'hostmaster@example.com',
             filtered => 'mailto:hostmaster@example.com',
-            begin    => 110
           },
           {
             original => 'hostmaster.example.com',
             filtered => 'http://hostmaster.example.com',
-            begin    => 161,
           }
         ],
         todo => 'foo@bar.com -> mailto:foo@bar.com mapping',
@@ -167,7 +158,6 @@ HAVE
         want => [{
             original    => '12.23.45.67',
             filtered    => 'http://12.23.45.67',
-            begin       => 10,
         }],
     },
 
@@ -178,17 +168,14 @@ HAVE
           {
             original    => '::ffff:192.0.2.128',
             filtered    => 'http://[::ffff:192.0.2.128]',
-            begin       => 10,
           },
           {
             original    => '2001:0db8:1234:0000:0000:0000:0000:0000',
             filtered    => 'http://[2001:0db8:1234:0000:0000:0000:0000:0000]',
-            begin       => 33,
           },
           {
             original    => '::1',
             filtered    => 'http://[::1]',
-            begin       => 77,
           }
         ],
     },
@@ -204,8 +191,59 @@ HAVE
         have => "At http://➡.ws/᛽ and stuff",
         want => [{
             original => "http://➡.ws/᛽",
-            begin    => 3
         }],
+    },
+
+    # URLs in double quotes, like in the RFC
+    {
+        have => q["g.." = "http://a/b/c/g.."],
+        want => [{
+            original => "http://a/b/c/g..",
+        }],
+        todo => "URIs inside double quotes shouldn't be decrufted",
+    },
+
+    # Issues with hosts and IP addresses surrounded by quotes.
+    {
+        todo => "Proper stripping of quoted URIs",
+        have => <<'END',
+   might lead a human user to assume that the host is 'cnn.example.com',
+   whereas it is actually '10.0.0.1'.  Note that a misleading userinfo
+END
+        want => [
+          {
+            original => "cnn.example.com",
+            filtered => "http://cnn.example.com",
+          },
+          {
+            original => "10.0.0.1",
+            filtered => "http://10.0.0.1",
+          },
+        ],
+    },
+
+    # Issues with hosts and IP addresses surrounded by various things
+    {
+        have => <<'END',
+Blah blah (www.example.com) and (1.2.3.4) with 5.4.2.1!
+END
+        want => [
+          {
+            original => "(www.example.com)",
+            decrufted=> "www.example.com",
+            filtered => "http://www.example.com",
+          },
+          {
+            original => "(1.2.3.4)",
+            decrufted=> "1.2.3.4",
+            filtered => "http://1.2.3.4",
+          },
+          {
+            original => "5.4.2.1!",
+            decrufted=> "5.4.2.1",
+            filtered => "http://5.4.2.1",
+          },
+        ],
     }
 );
 

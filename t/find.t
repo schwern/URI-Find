@@ -204,6 +204,32 @@ HAVE
         }],
     },
 
+    # Quoted URIs with space in them, example from RFC 3986
+    {
+        todo => "quoted URIs with space in them",
+        have => <<'END',
+      Yes, Jim, I found it under "http://www.w3.org/Addressing/",
+      but you can probably pick it up from <ftp://foo.example.
+      com/rfc/>.  Note the warning in <http://www.ics.uci.edu/pub/
+      ietf/uri/historical.html#WARNING>.
+END
+        want => [
+          {
+            original => q[http://www.w3.org/Addressing/],
+          },
+          {
+            original => qq[ftp://foo.example.\n      com/rfc/],
+            decrufted=> qq[ftp://foo.example.com/rfc/],
+            filtered => qq[ftp://foo.example.com/rfc/],
+          },
+          {
+            original => qq[http://www.ics.uci.edu/pub/\n      ietf/uri/historical.html#WARNING],
+            decrufted=> qq[http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING],
+            filtered => qq[http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING],
+          }
+        ],
+    },
+
     # Issues with hosts and IP addresses surrounded by quotes.
     {
         have => <<'END',

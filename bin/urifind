@@ -5,7 +5,7 @@ use warnings;
 
 use URI::Find;
 
-print join "\n", URI::Find->new->find_all(join "", <>);
+print map { "$_\n" } URI::Find->new->find_all(join "", <>);
 
 
 =head1 NAME

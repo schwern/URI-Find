@@ -131,14 +131,16 @@ sub find_all {
 
     my @uris;
     my $uri_regex = $self->accept_schemeless ? $uri_both : $uri;
-    SEARCH: while($text =~ /( ['"<]? $uri_regex ['">]? )/gx) {
-        $DB::single = 1;
+    SEARCH: while($text =~ m{(
+                                (?:" [^"]+ ")   |
+                                (?:< [^>]+ >)   |
+                                $uri_regex
+                            )}gx)
+    {
+        my $original = $1;
+        next SEARCH unless $original =~ /\S/;
 
-        my $match = $1;
-        next SEARCH unless $match =~ /\S/;
-
-        my $original_uri  = URI::Find::URI->new($match);
-        my $decrufted_uri = URI::Find::URI->new($self->decruft($match));
+        my $decrufted_uri = URI::Find::URI->new($self->decruft($original));
         my $uri           = URI::Find::URI->new($decrufted_uri);
         my $has_scheme = !!$uri->scheme;
 
@@ -158,10 +160,10 @@ sub find_all {
 
         # Store context
         $uri = URI::Find::URI->new($uri);
-        $uri->original_uri($original_uri);
+        $uri->original_text($original);
         $uri->decrufted_uri($decrufted_uri);
         $uri->end_pos(pos($text));
-        $uri->begin_pos(pos($text) - length $match);
+        $uri->begin_pos(pos($text) - length $original);
 
         push @uris, $uri;
     }
@@ -797,7 +799,6 @@ sub default_uri_quoting_patterns {
     return [
         qr/^< ([^>]+) >$/x,
         qr/^" ([^"]+) "$/x,
-        qr/^' ([^']+) '$/x,
     ];
 }
 
@@ -808,7 +809,11 @@ sub dequote {
     $DB::single = 1;
     for my $pattern ($self->uri_quoting_patterns) {
         next unless $uri =~ $pattern;
-        return $1;
+
+        # Strip whitespace out of quoted URIs.
+        my $uri = $1;
+        $uri =~ s{\s+}{}g;
+        return $uri;
     }
 
     return;

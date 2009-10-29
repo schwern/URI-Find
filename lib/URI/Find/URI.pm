@@ -101,21 +101,21 @@ Unless otherwise noted they are all get/set accessors of the form:
   $uri->method($value);         # set
 
 
-=head3 original_uri
+=head3 original_text
 
-A URI representing the unfiltered URI object.  This is the URI as
-found in the text before any trailing artifacts (like probable
-punctuation) have been stripped.
+The unfiltered text matched.  This is the URI as found in the text
+before any trailing artifacts (like probable punctuation) or quoting
+has been stripped and any heuristics applied.
 
-If $original_uri and $uri are the same C<<$uri->original_uri>> may
-return itself.
+This is not a URI object as the contents may not be a URI.
 
 =cut
 
-has original_uri => (
+has original_text => (
     is          => 'rw',
-    isa         => 'URI',
-    default     => sub { $_[0] }
+    isa         => 'NotEmptyStr',
+    default     => sub { $_[0] },
+    lazy        => 1,
 );
 
 
@@ -128,7 +128,8 @@ The original URI after decrufting but before any further modification.
 has decrufted_uri => (
     is          => 'rw',
     isa         => 'URI',
-    default     => sub { $_[0] }
+    default     => sub { $_[0] },
+    lazy        => 1
 );
 
 

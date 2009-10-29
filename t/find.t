@@ -14,7 +14,7 @@ my @want_keys = qw(
 );
 
 my %uri2have = (
-    original    => sub { $_[0]->original_uri },
+    original    => sub { $_[0]->original_text },
     filtered    => sub { $_[0] },
     decrufted   => sub { $_[0]->decrufted_uri },
 );
@@ -198,7 +198,7 @@ HAVE
     {
         have => q["g.." = "http://a/b/c/g.."],
         want => [{
-            original => q[http://a/b/c/g..],
+            original => q["http://a/b/c/g.."],
             decrufted=> q[http://a/b/c/g..],
             filtered => q[http://a/b/c/g..],
         }],
@@ -206,7 +206,6 @@ HAVE
 
     # Quoted URIs with space in them, example from RFC 3986
     {
-        todo => "quoted URIs with space in them",
         have => <<'END',
       Yes, Jim, I found it under "http://www.w3.org/Addressing/",
       but you can probably pick it up from <ftp://foo.example.
@@ -215,15 +214,17 @@ HAVE
 END
         want => [
           {
-            original => q[http://www.w3.org/Addressing/],
+            original => q["http://www.w3.org/Addressing/"],
+            decrufted=> q[http://www.w3.org/Addressing/],
+            filtered => q[http://www.w3.org/Addressing/],
           },
           {
-            original => qq[ftp://foo.example.\n      com/rfc/],
+            original => qq[<ftp://foo.example.\n      com/rfc/>],
             decrufted=> qq[ftp://foo.example.com/rfc/],
             filtered => qq[ftp://foo.example.com/rfc/],
           },
           {
-            original => qq[http://www.ics.uci.edu/pub/\n      ietf/uri/historical.html#WARNING],
+            original => qq[<http://www.ics.uci.edu/pub/\n      ietf/uri/historical.html#WARNING>],
             decrufted=> qq[http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING],
             filtered => qq[http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING],
           }

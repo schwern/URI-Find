@@ -10,7 +10,7 @@ my $CLASS = "URI::Find::URI";
 {
     isa_ok $CLASS, "URI";
     can_ok $CLASS, "canonical";
-    can_ok $CLASS, "original_uri";
+    can_ok $CLASS, "original_text";
 }
 
 
@@ -20,7 +20,7 @@ my $CLASS = "URI::Find::URI";
 
     isa_ok $uri, "URI";
     can_ok $uri, "canonical";
-    can_ok $uri, "original_uri";
+    can_ok $uri, "original_text";
 
     is $uri, URI->new($string),     "stringification";
 
@@ -28,7 +28,7 @@ my $CLASS = "URI::Find::URI";
     ok( $uri != URI->new($string) );
     ok( $uri == $uri );
 
-    is $uri->original_uri, $uri;
+    is $uri->original_text, $uri;
 
     $uri->begin_pos(4);
     $uri->end_pos(12);
@@ -37,8 +37,8 @@ my $CLASS = "URI::Find::URI";
     is $uri->end_pos,  12;
 
     my $orig_uri = URI->new("http://www.foo.com");
-    $uri->original_uri($orig_uri);
-    is $uri->original_uri, $orig_uri;
+    $uri->original_text($orig_uri);
+    is $uri->original_text, $orig_uri;
 }
 
 done_testing;

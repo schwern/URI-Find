@@ -17,7 +17,7 @@ DONE * Schemeless options
   * List of allowed schemeless postfixes
       Default to the ICANN list of TLDs
 
-* URL quoting regexes
+DONE * URL quoting regexes
   * Whatever's inside the regex is accepted as a URL
   * ie. URL:<[^>]+> and the like
 

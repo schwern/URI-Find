@@ -273,6 +273,21 @@ END
             filtered => "http://5.4.2.1",
           },
         ],
+    },
+
+    # Runaway quoting
+    {
+        todo => "The entirety of text in quotes will be considered, not its content",
+        have => <<'END',
+   "lowercase.  For example, the URI <HTTP://www.EXAMPLE.com/> is"
+END
+        want => [
+            {
+                original        => '<HTTP://www.EXAMPLE.com/>',
+                decrufted       => 'HTTP://www.EXAMPLE.com/',
+                filtered        => 'HTTP://www.EXAMPLE.com/',
+            },
+        ],
     }
 );
 

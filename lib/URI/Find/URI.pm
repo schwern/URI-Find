@@ -194,7 +194,7 @@ sub add_scheme {
     $copy =~ s{ ($Grammar{ipv6_address}) }{\[$1\]}x;
 
     # Add the scheme
-    $copy = "$Grammar{scheme}://$copy";
+    $copy = "$scheme://$copy";
     return $URI_CLASS->new($copy);
 }
 

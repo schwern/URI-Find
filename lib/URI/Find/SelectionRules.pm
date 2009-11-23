@@ -550,7 +550,7 @@ sub uri_match {
     my $uri  = shift;
 
     # Ignore schemeless with unknown domains
-    return 0 if !$uri->scheme and
+    return 0 if $uri->is_schemeless and
                 !$self->has_allowed_domain($uri);
 
     for my $filter ($self->ignore_filters) {

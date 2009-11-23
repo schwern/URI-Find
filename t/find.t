@@ -198,7 +198,7 @@ HAVE
     {
         have => q["g.." = "http://a/b/c/g.."],
         want => [{
-            original => q["http://a/b/c/g.."],
+            original => q[http://a/b/c/g..],
             decrufted=> q[http://a/b/c/g..],
             filtered => q[http://a/b/c/g..],
         }],
@@ -214,7 +214,7 @@ HAVE
 END
         want => [
           {
-            original => q["http://www.w3.org/Addressing/"],
+            original => q[http://www.w3.org/Addressing/],
             decrufted=> q[http://www.w3.org/Addressing/],
             filtered => q[http://www.w3.org/Addressing/],
           },

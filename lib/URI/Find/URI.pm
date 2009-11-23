@@ -260,6 +260,14 @@ has is_quoted => (
     default     => 0,
 );
 
+has is_schemeless => (
+    is          => 'rw',
+    isa         => 'Bool',
+    default     => sub {
+        return $_[0]->original_uri->scheme ? 0 : 1;
+    }
+);
+
 sub is_just_scheme {
     my $self = shift;
     return $self->original_text =~ m/^$Grammar{scheme} :$/x;

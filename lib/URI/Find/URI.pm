@@ -1,8 +1,14 @@
 package URI::Find::URI;
 
 use Mouse;
+use URI::Find::Grammar;
 use URI::Find::Types;
 use URI::Escape;
+use URI::Find::TransformRules;
+
+use Readonly;
+
+Readonly my $URI_CLASS => 'URI::Find::IRI';
 
 
 =head1 NAME
@@ -22,14 +28,14 @@ which the URI was found.
 
 =cut
 
-our $Delegate_Class = "URI";
+our $Delegate_Class = "URI::Find::IRI";
 eval "require $Delegate_Class" or die $@;
 
-has _delegate => (
-    is          => 'rw',
-    isa         => $Delegate_Class,
-    required    => 1
-);
+
+sub _delegate {
+    my $self = shift;
+    return $self->transformed_uri;
+}
 
 # At the time of this writing URI objects are scalar refs.
 # I can't add anything to it so I have to delegate everything.
@@ -38,7 +44,7 @@ sub AUTOLOAD {
     my $self = shift;
     my($method) = $AUTOLOAD =~ m/([^:]+)$/;
 
-    return $self->_delegate->$method(@_);
+    return $self->transformed_uri->$method(@_);
 }
 
 
@@ -47,6 +53,7 @@ sub isa {
     my $thing = shift;
 
     return 1 if $thing->SUPER::isa(@_);
+
     return 1 if (ref $thing and $thing->_delegate)
                     ? $thing->_delegate->isa(@_) : $Delegate_Class->isa(@_);
     return 0;
@@ -56,6 +63,10 @@ sub can {
     my $thing = shift;
 
     return 1 if $thing->SUPER::can(@_);
+
+    # Don't delegate magic methods like DESTROY and BUILD
+    return 0 if $_[0] =~ /^[A-Z]+$/;
+
     return 1 if (ref $thing and $thing->_delegate)
                     ? $thing->_delegate->can(@_) : $Delegate_Class->can(@_);
     return 0;
@@ -65,7 +76,7 @@ sub can {
 # Replicate URI's overloading as of 1.38.
 # Can't copy it because its methods violate encapsulation.
 use overload
-  '""' => sub { $_[0]->_delegate->as_string },
+  '""' => sub { $_[0]->transformed_uri->as_string },
   '==' => sub { _obj_eq(@_)  },
   '!=' => sub { !_obj_eq(@_) },
   fallback => 1
@@ -77,20 +88,6 @@ sub _obj_eq {
 }
 
 
-# Change new() to take just the URI
-sub BUILDARGS {
-    my($class, $uri) = @_;
-
-    # I don't want URI to escape anything, but there's no way to turn it off.
-    # So blot out URI::Escape::escape_char().
-    no warnings 'redefine';
-    local *URI::Escape::escape_char = sub { return $_[0] };
-
-    return {
-        _delegate => $Delegate_Class->new($uri)
-    };
-}
-
 =head1 METHODS
 
 URI::Find::URI acts just like URI with the addition of these methods:
@@ -99,7 +96,6 @@ Unless otherwise noted they are all get/set accessors of the form:
 
   my $value = $uri->method;     # get
   $uri->method($value);         # set
-
 
 =head3 original_text
 
@@ -114,23 +110,118 @@ This is not a URI object as the contents may not be a URI.
 has original_text => (
     is          => 'rw',
     isa         => 'NotEmptyStr',
-    default     => sub { $_[0] },
-    lazy        => 1,
 );
 
+has original_uri => (
+    is          => 'rw',
+    isa         => 'URI',
+    default     => sub {
+        return URI::Find::IRI->new($_[0]->original_text);
+    }
+);
 
 =head3 decrufted_uri
 
-The original URI after decrufting but before any further modification.
+The original_text with heuristics applied to remove anything which is
+probably not part of the URI like trailing puncuation.
 
 =cut
 
 has decrufted_uri => (
     is          => 'rw',
     isa         => 'URI',
-    default     => sub { $_[0] },
-    lazy        => 1
+    lazy        => 1,
+    default     => sub {
+        return $_[0]->original_uri if $_[0]->is_quoted;
+        return $_[0]->decruft($_[0]->original_uri);
+    }
 );
+
+=head3 transformed_uri
+
+A version of decrufted_uri which is guaranteed to have a scheme.
+
+=cut
+
+has transformed_uri => (
+    is          => 'rw',
+    isa         => 'URI',
+    lazy        => 1,
+    default     => sub {
+        return $_[0]->transform($_[0]->decrufted_uri);
+    },
+);
+
+
+has is_schemeless => (
+    is          => 'rw',
+    isa         => 'Bool',
+    default     => 0
+);
+
+
+has transform_rules => (
+    is          => 'rw',
+    isa         => 'URI::Find::TransformRules',
+    default     => sub {
+        URI::Find::TransformRules->new
+    },
+);
+
+sub add_scheme {
+    my $self = shift;
+    my $uri  = shift;
+
+    my $uri_class = ref $uri || $URI_CLASS;
+    return $uri if $uri->scheme;
+
+    $self->is_schemeless(1);
+
+    my $host = $uri->opaque;
+    return $uri unless $host;
+
+    my($first_part) = $host =~ m{^ ([^\.]+) }x;
+    $first_part = '' unless defined $first_part;
+
+    # What scheme should we use?
+    my $scheme_map = $self->transform_rules->scheme_map;
+    my $scheme = $scheme_map->{$first_part};
+    $scheme = $scheme_map->{""} unless defined $scheme;
+    return $uri unless defined $scheme;
+
+    # IPv6 addresses go in brackets
+    my $copy = $uri;
+    $copy =~ s{ ($Grammar{ipv6_address}) }{\[$1\]}x;
+
+    # Add the scheme
+    $copy = "$Grammar{scheme}://$copy";
+    return $URI_CLASS->new($copy);
+}
+
+
+sub decruft {
+    my $self = shift;
+    my $uri = shift;
+    my $uri_class = ref $uri || $URI_CLASS;
+
+    for my $filter ($self->transform_rules->decruft_filters) {
+        $filter->($uri);
+    }
+
+    # The filters might cause the URI object to turn back into a string.
+    $uri = $uri_class->new($uri) unless ref $uri;
+    return $uri;
+}
+
+
+sub transform {
+    my $self = shift;
+    my $uri  = shift;
+
+    $uri = $self->add_scheme($uri);
+
+    return $uri;
+}
 
 
 =head3 begin_pos
@@ -148,11 +239,31 @@ an C<<end_pos>> of 15.
 has begin_pos => (
     is          => 'rw',
     isa         => 'PosInt',
+    lazy        => 1,
+    default     => sub {
+        $_[0]->end_pos - length $_[0]->original_text
+    }
 );
 
 has end_pos => (
     is          => 'rw',
     isa         => 'PosInt',
+    lazy        => 1,
+    default     => sub {
+        $_[0]->begin_pos + length $_[0]->original_text
+    }
 );
+
+has is_quoted => (
+    is          => 'rw',
+    isa         => 'Bool',
+    default     => 0,
+);
+
+sub is_just_scheme {
+    my $self = shift;
+    return $self->original_text =~ m/^$Grammar{scheme} :$/x;
+}
+
 
 1;

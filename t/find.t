@@ -15,7 +15,7 @@ my @want_keys = qw(
 
 my %uri2have = (
     original    => sub { $_[0]->original_text },
-    filtered    => sub { $_[0] },
+    filtered    => sub { $_[0]->transformed_uri },
     decrufted   => sub { $_[0]->decrufted_uri },
 );
 

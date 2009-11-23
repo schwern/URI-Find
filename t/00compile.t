@@ -17,6 +17,8 @@ find({
 
 for my $file (@files) {
     my($module) = $file;
+    next if $file =~ /#/;  # emacs auto-save
+
     $module =~ s{^./}{};
     $module =~ s/\.pm$//;
     $module =~ s{/}{::}g;

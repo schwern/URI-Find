@@ -3,6 +3,7 @@
 use strict;
 use Test::More;
 
+use URI;
 use URI::Find::URI;
 my $CLASS = "URI::Find::URI";
 
@@ -16,7 +17,7 @@ my $CLASS = "URI::Find::URI";
 
 {
     my $string = "http://www.foo.com/";
-    my $uri = URI::Find::URI->new($string);
+    my $uri = $CLASS->new( original_text => $string );
 
     isa_ok $uri, "URI";
     can_ok $uri, "canonical";

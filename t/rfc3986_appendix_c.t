@@ -32,6 +32,6 @@ my $finder = URI::Find->new(sub {
 $finder->find(\$Example);
 
 is_deeply \@found, \@Uris, "RFC 3986 Appendix C example";
-like($Example, qr/Link 1/, 'replaced link 1');
-like($Example, qr/Link 2/, 'replaced link 2');
-like($Example, qr/Link 3/, 'replaced link 3');
+like($Example, qr/"Link 1"/, 'replaced link 1');
+like($Example, qr/<Link 2>/, 'replaced link 2');
+like($Example, qr/<Link 3>/, 'replaced link 3');

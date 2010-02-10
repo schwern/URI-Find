@@ -20,14 +20,18 @@ my @Uris = (
       "http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING",
 );
 
-use Test::More tests => 1;
+use Test::More tests => 4;
 use URI::Find;
 
 my @found;
 my $finder = URI::Find->new(sub {
     my($uri) = @_;
     push @found, $uri;
+    return "Link " . scalar @found;
 });
 $finder->find(\$Example);
 
 is_deeply \@found, \@Uris, "RFC 3986 Appendix C example";
+like($Example, qr/Link 1/, 'replaced link 1');
+like($Example, qr/Link 2/, 'replaced link 2');
+like($Example, qr/Link 3/, 'replaced link 3');

@@ -160,6 +160,7 @@ sub find {
                     };
                     if( $has_uri ) {
                         $self->find(\$maybe_uri, $escape_func);
+                        $replace = $maybe_uri;
                     }
                     else {
                         $replace .= $escape_func->($2.$3.$4);

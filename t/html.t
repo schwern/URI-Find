@@ -30,6 +30,6 @@ my $finder = URI::Find->new(sub {
 $finder->find(\$Example);
 
 is_deeply \@found, \@Uris, "found links in HTML";
-like($Example, qr/Link 1/, 'link 1 replaced');
-like($Example, qr/Link 2/, 'link 2 replaced');
-like($Example, qr/Link 3/, 'link 3 replaced');
+like($Example, qr/"Link 1"/, 'link 1 replaced');
+like($Example, qr/<a href="Link 2"/, 'link 2 replaced');
+like($Example, qr/<a class="warning" href="Link 3"/, 'link 3 replaced');

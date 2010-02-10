@@ -116,6 +116,7 @@ sub find {
     $escape_func ||= sub { return $_[0] };
 
     $self->{_uris_found} = 0;
+    $self->{_recursion_level} ||= 0;
 
     # Don't assume http.
     my $old_strict = URI::URL::strict(1);
@@ -146,7 +147,7 @@ sub find {
                     $maybe_uri =~ /^$uriRe/;
                 };
 
-                if( $is_uri ) {
+                if( $is_uri && $self->{_recusion_level} == 0) {
                     $replace .= $escape_func->($2);
                     $replace .= $self->_uri_filter($maybe_uri);
                     $replace .= $escape_func->($4);
@@ -159,8 +160,14 @@ sub find {
                         $maybe_uri =~ /$uriRe/;
                     };
                     if( $has_uri ) {
-                        $self->find(\$maybe_uri, $escape_func);
-                        $replace = $maybe_uri;
+                        my $pre = $2;
+                        my $post = $4;
+                        $self->{_recursion_level}++;
+                        do { $self->find(\$maybe_uri, $escape_func) };
+                        $self->{_recursion_level}--;
+                        $replace .= $escape_func->($pre);
+                        $replace .= $maybe_uri;
+                        $replace .= $escape_func->($post);
                     }
                     else {
                         $replace .= $escape_func->($2.$3.$4);

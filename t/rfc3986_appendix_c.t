@@ -10,7 +10,7 @@ my $Example = <<"END";
 Yes, Jim, I found it under "http://www.w3.org/Addressing/",
 but you can probably pick it up from <ftp://foo.example.
 com/rfc/>.  Note the warning in <http://www.ics.uci.edu/pub/
-ietf/uri/historical.html#WARNING>.
+ietf/uri/historical.html#WARNING>. Also <foo bar>.
 END
 
 # Which should find these URIs
@@ -19,7 +19,6 @@ my @Uris = (
       "ftp://foo.example.com/rfc/",
       "http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING",
 );
-
 
 use Test::More tests => 1;
 use URI::Find;

@@ -6,7 +6,7 @@ my $Example = <<"END";
 
 Yes, Jim, I found it under "http://www.w3.org/Addressing/",
 but you can probably pick it up from <a href="ftp://foo.example.com/rfc/">the RFC</a>. 
-Note the <a class="warning" href="http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING">warning</a>.
+Note the <a class="warning" href="http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING" target="_blank">warning</a>.
 Also <foo bar>.
 END
 

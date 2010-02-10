@@ -17,14 +17,19 @@ my @Uris = (
       "http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING",
 );
 
-use Test::More tests => 1;
+use Test::More tests => 4;
 use URI::Find;
 
 my @found;
 my $finder = URI::Find->new(sub {
     my($uri) = @_;
     push @found, $uri;
+    return "Link " . scalar @found;
+    
 });
 $finder->find(\$Example);
 
 is_deeply \@found, \@Uris, "found links in HTML";
+like($Example, qr/Link 1/, 'link 1 replaced');
+like($Example, qr/Link 2/, 'link 2 replaced');
+like($Example, qr/Link 3/, 'link 3 replaced');

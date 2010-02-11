@@ -37,7 +37,6 @@ my($cruftSet) = q{]),.'";}; #'#
 
 URI::Find - Find URIs in arbitrary text
 
-
 =head1 SYNOPSIS
 
   require URI::Find;
@@ -45,7 +44,6 @@ URI::Find - Find URIs in arbitrary text
   my $finder = URI::Find->new(\&callback);
 
   $how_many_found = $finder->find(\$text);
-
 
 =head1 DESCRIPTION
 

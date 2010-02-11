@@ -143,7 +143,7 @@ sub find {
                 $maybe_uri = $3;
                 my $is_uri = do {  # Don't alter $1...
                     $maybe_uri =~ s/\s+//g;
-                    $maybe_uri =~ $uriRe;
+                    $maybe_uri =~ /^$uriRe/;
                 };
 
                 if( $is_uri ) {
@@ -152,7 +152,23 @@ sub find {
                     $replace .= $escape_func->($4);
                 }
                 else {
-                    $replace .= $escape_func->($2.$3.$4);
+                    # the whole text inside of the <...> was not a url, but
+                    # maybe it has a url (like an HTML <a> link)
+                    my $has_uri = do { # Don't alter $1...
+                        $maybe_uri = $3;
+                        $maybe_uri =~ /$uriRe/;
+                    };
+                    if( $has_uri ) {
+                        my $pre = $2;
+                        my $post = $4;
+                        do { $self->find(\$maybe_uri, $escape_func) };
+                        $replace .= $escape_func->($pre);
+                        $replace .= $maybe_uri;
+                        $replace .= $escape_func->($post);
+                    }
+                    else {
+                        $replace .= $escape_func->($2.$3.$4);
+                    }
                 }
             }
             else {

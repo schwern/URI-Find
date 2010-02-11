@@ -1,16 +1,13 @@
 #!/usr/bin/perl -w
-
 use strict;
-
-
-# RFC 3986 Appendix C covers "Delimiting a URI in Context"
-# and it has this example...
+use warnings;
 
 my $Example = <<"END";
+
 Yes, Jim, I found it under "http://www.w3.org/Addressing/",
-but you can probably pick it up from <ftp://foo.example.
-com/rfc/>.  Note the warning in <http://www.ics.uci.edu/pub/
-ietf/uri/historical.html#WARNING>. Also <foo bar>.
+but you can probably pick it up from <a href="ftp://foo.example.com/rfc/">the RFC</a>. 
+Note the <a class="warning" href="http://www.ics.uci.edu/pub/ietf/uri/historical.html#WARNING" target="_blank">warning</a>.
+Also <foo bar>.
 END
 
 # Which should find these URIs
@@ -28,10 +25,11 @@ my $finder = URI::Find->new(sub {
     my($uri) = @_;
     push @found, $uri;
     return "Link " . scalar @found;
+    
 });
 $finder->find(\$Example);
 
-is_deeply \@found, \@Uris, "RFC 3986 Appendix C example";
-like($Example, qr/"Link 1"/, 'replaced link 1');
-like($Example, qr/<Link 2>/, 'replaced link 2');
-like($Example, qr/<Link 3>/, 'replaced link 3');
+is_deeply \@found, \@Uris, "found links in HTML";
+like($Example, qr/"Link 1"/, 'link 1 replaced');
+like($Example, qr/<a href="Link 2"/, 'link 2 replaced');
+like($Example, qr/<a class="warning" href="Link 3"/, 'link 3 replaced');

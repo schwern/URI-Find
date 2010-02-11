@@ -32,7 +32,9 @@ my $build = Module::Build->new(
             bugtracker      => 'http://rt.cpan.org/Public/Dist/Display.html?Name=URI-Find',
             repository      => 'http://github.com/schwern/uri-find/tree/master',
         }
-    }
+    },
+
+    recursive_test_files        => 1,
 );
 
 $build->create_build_script;

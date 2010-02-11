@@ -1,5 +1,11 @@
 Revision history for Perl module URI::Find.
 
+20100211  Thu Feb 11 04:02:26 PST 2010
+    Bug Fixes
+    * Finding URIs inside brackets was pretty badly broken by
+      the last release.  (Michael Peters)
+
+
 20090319  Thu Mar 19 12:17:53 PDT 2009
     Bug Fixes
     * Schemeless now ignores the case of the TLD.

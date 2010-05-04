@@ -7,7 +7,7 @@ build_requires:
   Test::More: 0.82
 configure_requires:
   Module::Build: 0.30
-generated_by: 'Module::Build version 0.3601'
+generated_by: 'Module::Build version 0.3607'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,10 +16,10 @@ name: URI-Find
 provides:
   URI::Find:
     file: lib/URI/Find.pm
-    version: 20100211
+    version: 20100504
   URI::Find::Schemeless:
     file: lib/URI/Find/Schemeless.pm
-    version: 20090319
+    version: 20100504
 requires:
   URI: 1.00
   URI::URL: 5.00
@@ -29,4 +29,4 @@ resources:
   homepage: http://search.cpan.org/dist/URI-Find
   license: http://dev.perl.org/licenses/
   repository: http://github.com/schwern/uri-find/tree/master
-version: 20100211
+version: 20100504

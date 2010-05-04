@@ -21,7 +21,9 @@ use URI::URL;
 
 require URI;
 
-my($schemeRe) = $URI::scheme_re;
+# URI scheme pattern without the non-alpha numerics.
+# Those are extremely uncommon and interfere with the match.
+my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9]*/;
 my($uricSet)  = $URI::uric;
 
 # We need to avoid picking up 'HTTP::Request::Common' so we have a

@@ -109,6 +109,9 @@ BEGIN {
           '<x>intag.com</x>'     => [[S => 'http://intag.com/'  ]],
           '[mailto:somebody@company.ext]' => 'mailto:somebody@company.ext',
           'HTtp://MIXED-Case.Com' => 'http://mixed-case.com/',
+          "The technology of magnetic energy has become so powerful an entire ".
+          "house can...http://bit.ly/8yEdeb"
+            => "http://bit.ly/8yEdeb",
 
           # False tests
           'HTTP::Request::Common'                       => [],

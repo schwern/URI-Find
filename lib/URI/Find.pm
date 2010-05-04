@@ -318,7 +318,15 @@ sub decruft {
     $self->{end_cruft} = '';
 
     if( $orig_match =~ s/([\Q$cruftSet\E]+)$// ) {
-        $self->{end_cruft} = $1;
+        # urls can end with HTML entities if found in HTML so let's put back semicolons
+        # if this looks like the case
+        my $cruft = $1;
+        if( $cruft eq ';' && $orig_match =~ /\&(\#[1-9]\d{1,3}|[a-zA-Z]{2,8})$/) {
+            $orig_match .= $cruft;
+            $cruft = '';
+        }
+
+        $self->{end_cruft} = $cruft if $cruft;
     }
 
     return $orig_match;

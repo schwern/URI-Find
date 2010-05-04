@@ -3,6 +3,8 @@ Revision history for Perl module URI::Find.
 Next
     New Features
     * Added a urifind program. (Darren Chamberlain)
+    Bug Fixes
+    * Fixed a problem with finding links in HTML that ended with HTML entities
 
 
 20100211  Thu Feb 11 04:02:26 PST 2010

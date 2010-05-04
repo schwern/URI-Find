@@ -55,9 +55,7 @@ to be.)  It only finds URIs which include a scheme (http:// or the
 like), for something a bit less strict have a look at
 L<URI::Find::Schemeless|URI::Find::Schemeless>.
 
-For a command-line interface, see Darren Chamberlain's C<urifind>
-script.  It's available from his CPAN directory,
-L<http://www.cpan.org/authors/id/D/DA/DARREN/>.
+For a command-line interface, L<urifind> is provided.
 
 =head2 Public Methods
 
@@ -514,10 +512,12 @@ Greg Bacon, Jeff Pinyan, Roderick Schertler and others.
 
 Roderick Schertler <roderick@argon.org> maintained versions 0.11 to 0.16.
 
+Darren Chamberlain wrote urifind.
+
 
 =head1 LICENSE
 
-Copyright 2000, 2009 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
+Copyright 2000, 2009-2010 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
 
 This program is free software; you can redistribute it and/or 
 modify it under the same terms as Perl itself.
@@ -526,7 +526,8 @@ See F<http://www.perlfoundation.org/artistic_license_1_0>
 
 =head1 SEE ALSO
 
-L<URI::Find::Schemeless>, L<URI::URL>, L<URI>, RFC 3986 Appendix C
+L<urifind>, L<URI::Find::Schemeless>, L<URI::URL>, L<URI>,
+RFC 3986 Appendix C
 
 =cut
 

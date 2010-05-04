@@ -1,17 +1,13 @@
 #!/usr/local/bin/perl -w
 
 # ----------------------------------------------------------------------
-# $Id: urifind,v 1.2 2003/07/10 20:54:09 dlc Exp $ 
-# ----------------------------------------------------------------------
 # urifind - find URIs in a document and dump them to STDOUT.
 # Copyright (C) 2003 darren chamberlain <darren@cpan.org>
 # ----------------------------------------------------------------------
 
 use strict;
-use vars qw($VERSION $REVISION);
 
-$VERSION = 1.00;
-$REVISION = sprintf "%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+our $VERSION = 20100504;
 
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);
@@ -305,10 +301,6 @@ Same as C<-d>, but exit after dumping.
 
 =back
 
-=head1 VERSION
-
-This is F<urifind>, revision $Revision: 1.2 $.
-
 =head1 AUTHOR
 
 darren chamberlain E<lt>darren@cpan.orgE<gt>
@@ -323,4 +315,3 @@ under the same terms as Perl itself.
 =head1 SEE ALSO
 
 L<URI::Find>
-

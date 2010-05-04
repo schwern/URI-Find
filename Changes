@@ -1,5 +1,10 @@
 Revision history for Perl module URI::Find.
 
+20100504.1039  Tue May  4 10:39:23 PDT 2010
+    Doc Fixes
+    * Forgot to mention that we ship with urifind now.
+
+
 20100504  Tue May  4 10:29:52 PDT 2010
     New Features
     * Added a urifind program. (Darren Chamberlain)

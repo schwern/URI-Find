@@ -206,7 +206,7 @@ This can be turned on for single files with the C<-p> ("prefix") switch:
 It can also be turned off for multiple files with the C<-n> ("no
 prefix") switch:
 
-    $ urifind file1 file2
+    $ urifind -n file1 file2
     http://www.boston.com/index.html
     http://use.perl.org/
 
@@ -231,7 +231,7 @@ C<-P> option.  Both C<-S> and C<-P> can be specified multiple times:
     $ urifind -S mailto file1
     mailto:webmaster@boston.com
 
-    $ urifind -S mailto -S http
+    $ urifind -S mailto -S http file1
     mailto:webmaster@boston.com
     http://www.boston.com/index.html
 

@@ -10,7 +10,7 @@ use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
 
-$VERSION        = 20100504.1039;
+$VERSION        = 20100505;
 @EXPORT         = qw(find_uris);
 
 use constant YES => (1==1);

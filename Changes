@@ -1,6 +1,6 @@
 Revision history for Perl module URI::Find.
 
-Next
+20100505  Wed May  5 18:48:44 PDT 2010
     Test Fixes
     * Fixed t/urifind/find.t on Windows
 

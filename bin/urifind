@@ -7,7 +7,7 @@
 
 use strict;
 
-our $VERSION = 20100504.1039;
+our $VERSION = 20100505;
 
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);

@@ -19,12 +19,12 @@ is((grep /http:/ => @data),   9, "Found 9 mailto links");
 @data = `$^X $urifind $ifile -p`;
 my $count = 0;
 is(@data, 13, "*Still* correct number of elements");
-is((grep /^$ifile/ => @data), @data,
+is((grep /^\Q$ifile/ => @data), @data,
     "All elements are prefixed with the path when $urifind invoked with -p");
 
 @data = `$^X $urifind -n $ifile /dev/null`;
 is(@data, 13, "*Still* correct number of elements");
-is((grep !/^$ifile/ => @data), (@data),
+is((grep !/^\Q$ifile/ => @data), (@data),
     "All elements are not prefixed with the path when ($urifind,".
     " '/dev/null') invoked with -n");
 

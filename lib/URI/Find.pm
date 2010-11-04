@@ -326,6 +326,13 @@ sub decruft {
             $cruft =~ s/^;//;
         }
 
+        my $opening = $orig_match =~ tr/(/(/;
+        my $closing = $orig_match =~ tr/)/)/;
+        if ( $cruft =~ /\)$/ && $opening == ( $closing + 1 ) ) {
+            $orig_match .= ')';
+            $cruft =~ s/\)$//;
+        }
+
         $self->{end_cruft} = $cruft if $cruft;
     }
 

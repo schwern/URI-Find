@@ -112,6 +112,7 @@ BEGIN {
           "The technology of magnetic energy has become so powerful an entire ".
           "house can...http://bit.ly/8yEdeb"
             => "http://bit.ly/8yEdeb",
+          'http://www.foo.com/bar((baz)blah)' => 'http://www.foo.com/bar((baz)blah)',
 
           # False tests
           'HTTP::Request::Common'                       => [],

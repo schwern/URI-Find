@@ -21,6 +21,7 @@ my @tasks = (
   ["Foo&Bar\nhttp://abc.com.\nFoo&Bar", "Foo&amp;Bar\nxx&.\nFoo&amp;Bar"],
   ["Foo&Bar\nhttp://abc.com. http://def.com.\nFoo&Bar", 
    "Foo&amp;Bar\nxx&. xx&.\nFoo&amp;Bar"],
+  ["noturi:& should also be escaped", "noturi:&amp; should also be escaped"],
 );
 
 for my $task (@tasks) {
@@ -33,7 +34,6 @@ for my $task (@tasks) {
 
 sub simple_escape {
     my($toencode) = @_;
-
     $toencode =~ s{&}{&amp;}gso;
     return $toencode;
 }

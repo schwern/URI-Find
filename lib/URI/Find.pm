@@ -165,7 +165,7 @@ sub find {
                         my $post = $4;
                         do { $self->find(\$maybe_uri, $escape_func) };
                         $replace .= $escape_func->($pre);
-                        $replace .= $maybe_uri;
+                        $replace .= $maybe_uri;  # already escaped by find()
                         $replace .= $escape_func->($post);
                     }
                     else {

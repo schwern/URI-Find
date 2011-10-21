@@ -1,4 +1,12 @@
-Revision history for Perl module URI::Find.
+Next
+    Bug Fixes
+    * Things which look like URIs, but aren't, are now properly escaped like
+      other text.  [rt.cpan.org 71658]
+
+    New Features
+    * Balanced parens in URIs are no longer stripped.  Example:
+      "http://example.com/foo(bar)"  (Merten Falk)
+
 
 20100505  Wed May  5 18:48:44 PDT 2010
     Test Fixes

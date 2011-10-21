@@ -18,3 +18,4 @@ t/urifind/find.t
 t/urifind/pod.t
 t/urifind/sciencenews
 TODO
+META.json

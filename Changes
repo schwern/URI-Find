@@ -1,4 +1,4 @@
-Next
+20111020  Thu Oct 20 17:31:56 PDT 2011
     Bug Fixes
     * Things which look like URIs, but aren't, are now properly escaped like
       other text.  [rt.cpan.org 71658]

@@ -21,6 +21,15 @@ my @tasks = (
   ["Foo&Bar\nhttp://abc.com.\nFoo&Bar", "Foo&amp;Bar\nxx&.\nFoo&amp;Bar"],
   ["Foo&Bar\nhttp://abc.com. http://def.com.\nFoo&Bar", 
    "Foo&amp;Bar\nxx&. xx&.\nFoo&amp;Bar"],
+
+  # Thing which looks like a URL but isn't
+  ["noturi:& should also be escaped", "noturi:&amp; should also be escaped"],
+
+  # Thing which looks like a URL inside brackets, but isn't
+  ["Something & <foo://bar&.com> whatever", "Something &amp; <foo://bar&amp;.com> whatever"],
+
+  # Non-URL nested inside brackets
+  [q{<a href="foo://example&.com">}, q{<a href="foo://example&amp;.com">}],
 );
 
 for my $task (@tasks) {
@@ -33,7 +42,6 @@ for my $task (@tasks) {
 
 sub simple_escape {
     my($toencode) = @_;
-
     $toencode =~ s{&}{&amp;}gso;
     return $toencode;
 }

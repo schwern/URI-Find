@@ -1,4 +1,4 @@
-Next
+20111103  Thu Nov  3 12:14:21 PDT 2011
     Bug Fixes
     * URI::URL::strict will no longer leak out of find() if the callback
       or filter fails. [rt.cpan.org 71153] (Carl Chambers)

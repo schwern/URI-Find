@@ -4,7 +4,7 @@
       "Michael G Schwern <schwern@pobox.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112150",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
    "license" : [
       "perl_5"
    ],
@@ -17,7 +17,7 @@
       "build" : {
          "requires" : {
             "Module::Build" : "0.30",
-            "Test::More" : "0.82"
+            "Test::More" : "0.88"
          }
       },
       "configure" : {
@@ -36,11 +36,11 @@
    "provides" : {
       "URI::Find" : {
          "file" : "lib/URI/Find.pm",
-         "version" : "20111020"
+         "version" : "20111103"
       },
       "URI::Find::Schemeless" : {
          "file" : "lib/URI/Find/Schemeless.pm",
-         "version" : "20111020"
+         "version" : "20111103"
       }
    },
    "release_status" : "stable",
@@ -56,5 +56,5 @@
          "url" : "http://github.com/schwern/uri-find/tree/master"
       }
    },
-   "version" : "20111020"
+   "version" : "20111103"
 }

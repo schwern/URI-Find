@@ -12,7 +12,7 @@ my $build = Module::Build->new(
     },
 
     build_requires      => {
-        Test::More      => '0.82',
+        Test::More      => '0.88',
         Module::Build   => '0.30',
     },
 

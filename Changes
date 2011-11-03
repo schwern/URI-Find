@@ -1,3 +1,9 @@
+Next
+    Bug Fixes
+    * URI::URL::strict will no longer leak out of find() if the callback
+      or filter fails. [rt.cpan.org 71153] (Carl Chambers)
+
+
 20111020  Thu Oct 20 17:31:56 PDT 2011
     Bug Fixes
     * Things which look like URIs, but aren't, are now properly escaped like

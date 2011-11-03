@@ -119,9 +119,6 @@ sub find {
 
     $self->{_uris_found} = 0;
 
-    # Don't assume http.
-    my $old_strict = URI::URL::strict(1);
-
     # Yes, evil.  Basically, look for something vaguely resembling a URL,
     # then hand it off to URI::URL for examination.  If it passes, throw
     # it to a callback and put the result in its place.
@@ -181,7 +178,6 @@ sub find {
         $replace;
     }gsex;
 
-    URI::URL::strict($old_strict);
     return $self->{_uris_found};
 }
 
@@ -496,9 +492,15 @@ sub _is_uri {
       $uri =~ $self->schemeless_uri_re   and
       $uri !~ /^<?$schemeRe:/;
 
+    # Set strict to avoid bogus schemes
+    my $old_strict = URI::URL::strict(1);
+
     eval {
         $uri = URI::URL->new($uri);
     };
+
+    # And restore it
+    URI::URL::strict($old_strict);
 
     if($@ || !defined $uri) {   # leave everything untouched, its not a URI.
         return NO;

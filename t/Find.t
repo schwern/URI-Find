@@ -113,6 +113,8 @@ BEGIN {
           "house can...http://bit.ly/8yEdeb"
             => "http://bit.ly/8yEdeb",
           'http://www.foo.com/bar((baz)blah)' => 'http://www.foo.com/bar((baz)blah)',
+          'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]/',
+          '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]/',
 
           # False tests
           'HTTP::Request::Common'                       => [],

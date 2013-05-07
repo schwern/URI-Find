@@ -32,7 +32,7 @@ my($uricCheat) = __PACKAGE__->uric_set;
 $uricCheat =~ tr/://d;
 
 # Identifying characters accidentally picked up with a URI.
-my($cruftSet) = q{]),.'";}; #'#
+my($cruftSet) = q{])\},.'";}; #'#
 
 
 =head1 NAME
@@ -310,6 +310,14 @@ This method takes a candidate URI and strips off any cruft it finds.
 
 =cut
 
+my %balanced_cruft = (
+    '('         => ')',
+    '{'         => '}',
+    '['         => ']',
+    '"'         => '"',
+    q[']        => q['],
+);
+
 sub decruft {
     @_ == 2 || __PACKAGE__->badinvo;
     my($self, $orig_match) = @_;
@@ -326,11 +334,8 @@ sub decruft {
             $cruft =~ s/^;//;
         }
 
-        my $opening = $orig_match =~ tr/(/(/;
-        my $closing = $orig_match =~ tr/)/)/;
-        if ( $cruft =~ /\)$/ && $opening == ( $closing + 1 ) ) {
-            $orig_match .= ')';
-            $cruft =~ s/\)$//;
+        while( my($open, $close) = each %balanced_cruft ) {
+            $self->recruft_balanced(\$orig_match, \$cruft, $open, $close);
         }
 
         $self->{end_cruft} = $cruft if $cruft;
@@ -338,6 +343,23 @@ sub decruft {
 
     return $orig_match;
 }
+
+
+sub recruft_balanced {
+    my $self = shift;
+    my($orig_match, $cruft, $open, $close) = @_;
+
+    my $open_count  = () = $$orig_match =~ m{\Q$open}g;
+    my $close_count = () = $$orig_match =~ m{\Q$close}g;
+
+    if ( $$cruft =~ /\Q$close\E$/ && $open_count == ( $close_count + 1 ) ) {
+        $$orig_match .= $close;
+        $$cruft =~ s/\Q$close\E$//;
+    }
+
+    return;
+}
+
 
 =item B<recruft>
 

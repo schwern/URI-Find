@@ -1,3 +1,9 @@
+Next
+    Bug Fixes
+    * Handle balanced [], {} and quotes in addition to (). [rt.cpan.org 85053]
+    * Don't mangle IPv6 URLs. [rt.cpan.org 85053]
+
+
 20111103  Thu Nov  3 12:14:21 PDT 2011
     Bug Fixes
     * URI::URL::strict will no longer leak out of find() if the callback

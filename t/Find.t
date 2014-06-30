@@ -53,7 +53,8 @@ BEGIN {
 my %Tests;
 BEGIN {
     my $all = join '', keys %Run;
-
+	
+	use utf8;
     # ARGH!  URI::URL is inconsistant in how it normalizes URLs!
     # HTTP URLs get a trailing slash, FTP and gopher do not.
     %Tests = (
@@ -114,7 +115,20 @@ BEGIN {
             => "http://bit.ly/8yEdeb",
           'http://www.foo.com/bar((baz)blah)' => 'http://www.foo.com/bar((baz)blah)',
           'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]/',
-          '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]/',
+          '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]/',		  
+		  #
+		  ### Tests for IDNA domains
+		  'http://müller.de' => 'http://xn--mller-kva.de/',
+		  'http://موقع.وزارة-الاتصالات.مصر' => 'http://xn--4gbrim.xn----ymcbaaajlc6dj7bxne2c.xn--wgbh1c/',
+		  'http://правительство.рф' => 'http://xn--80aealotwbjpid2k.xn--p1ai/',
+		  'http://北京大学.中國' => 'http://xn--1lq90ic7fzpc.xn--fiqz9s/', 
+		  'http://北京大学.cn' => 'http://xn--1lq90ic7fzpc.cn/',
+		  #
+		  # Test new TLDs
+		  'http://my.test.transport' => 'http://my.test.transport/',
+		  'http://regierung.bayern' => 'http://regierung.bayern/',
+		  #
+		  ###
 
           # False tests
           'HTTP::Request::Common'                       => [],

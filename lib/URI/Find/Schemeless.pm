@@ -87,6 +87,7 @@ sub top_level_domain_re {
     @_ == 1 || __PACKAGE__->badinvo;
     my($self) = shift;
 
+	use utf8;
     # Updated from http://www.iana.org/domains/root/db/ with new TLDs
     my $plain = join '|', qw(
         AERO
@@ -762,8 +763,8 @@ sub top_level_domain_re {
 		zone          
 		zw                      
     );
-
-    return qr/(?:[\p{isAlpha}a-z]{2,20}|$plain)/i;
+	
+    return qr/(?:[a-z\p{isAlpha}]{2,20}|$plain)/i;
 }
 
 =head1 AUTHOR

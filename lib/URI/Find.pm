@@ -10,7 +10,7 @@ use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
 
-$VERSION        = 20111103;
+$VERSION        = 20140630;
 @EXPORT         = qw(find_uris);
 
 use constant YES => (1==1);
@@ -21,10 +21,17 @@ use URI::URL;
 
 require URI;
 
+### patch for IDNA domains
+my $reserved   = q(;/?:@&=+$,[]);
+my $mark       = q(-_.!~*'());                                    #'; emacs
+my $unreserved = "A-Za-z0-9\Q$mark\E";
+my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%"; # extend with Unicodeletter for IDNA
+###
+
 # URI scheme pattern without the non-alpha numerics.
 # Those are extremely uncommon and interfere with the match.
 my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9]*/;
-my($uricSet)  = $URI::uric;
+my($uricSet)  = $uric; # use new set
 
 # We need to avoid picking up 'HTTP::Request::Common' so we have a
 # subset of uric without a colon ("I have no colon and yet I must poop")

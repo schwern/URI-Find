@@ -61,3 +61,7 @@
 # Avoid patches and diff files lying around
 \.patch$
 \.diff$
+
+
+# Don't ship the Travis config.
+^\.travis\.yml$

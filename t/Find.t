@@ -2,6 +2,7 @@
 
 use strict;
 
+use open ':std', ':encoding(utf8)';
 use Test::More 'no_plan';
 
 use_ok 'URI::Find';

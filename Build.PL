@@ -29,8 +29,8 @@ my $build = Module::Build->new(
     meta_merge => {
         resources => {
             homepage        => 'http://search.cpan.org/dist/URI-Find',
-            bugtracker      => 'http://rt.cpan.org/Public/Dist/Display.html?Name=URI-Find',
-            repository      => 'http://github.com/schwern/uri-find/tree/master',
+            bugtracker      => 'http://github.com/schwern/URI-Find/issues/',
+            repository      => 'http://github.com/schwern/URI-Find/',
         }
     },
 

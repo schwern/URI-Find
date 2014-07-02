@@ -1,7 +1,15 @@
 Next
+    New Features
+    * IDNA (aka Unicode) domains are now supported. [github 3] (GwenDragon)
+    * The list of TLDs for schemeless matching has been updated. [github 3] (GwenDragon)
+
     Bug Fixes
-    * Handle balanced [], {} and quotes in addition to (). [rt.cpan.org 85053]
-    * Don't mangle IPv6 URLs. [rt.cpan.org 85053]
+    * Handle balanced [], {} and quotes in addition to (). [rt.cpan.org 85053] (Schwern)
+    * Don't mangle IPv6 URLs. [rt.cpan.org 85053] (Schwern)
+    * Schemeless is more accurate about two letter TLDs. [github 3] (GwenDragon)
+
+    Distribution Changes
+    * Switched the issue tracker to Github. (Schwern)
 
 
 20111103  Thu Nov  3 12:14:21 PDT 2011

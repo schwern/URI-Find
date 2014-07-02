@@ -4,7 +4,7 @@
       "Michael G Schwern <schwern@pobox.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
+   "generated_by" : "Module::Build version 0.4205",
    "license" : [
       "perl_5"
    ],
@@ -36,25 +36,25 @@
    "provides" : {
       "URI::Find" : {
          "file" : "lib/URI/Find.pm",
-         "version" : "20111103"
+         "version" : "20140702"
       },
       "URI::Find::Schemeless" : {
          "file" : "lib/URI/Find/Schemeless.pm",
-         "version" : "20111103"
+         "version" : "20140702"
       }
    },
    "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
-         "web" : "http://rt.cpan.org/Public/Dist/Display.html?Name=URI-Find"
+         "web" : "http://github.com/schwern/URI-Find/issues/"
       },
       "homepage" : "http://search.cpan.org/dist/URI-Find",
       "license" : [
          "http://dev.perl.org/licenses/"
       ],
       "repository" : {
-         "url" : "http://github.com/schwern/uri-find/tree/master"
+         "url" : "http://github.com/schwern/URI-Find/"
       }
    },
-   "version" : "20111103"
+   "version" : "20140702"
 }

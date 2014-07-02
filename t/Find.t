@@ -86,11 +86,9 @@ BEGIN {
           'irc.lightning.net irc.mcs.net'
               => [[S => 'http://irc.lightning.net/'],
                   [S => 'http://irc.mcs.net/']],
-          'foo.bar.xx/~baz/',
-              => [[S => 'http://foo.bar.xx/~baz/']],
+          'foo.bar.xx/~baz/' => [],
           'foo.bar.xx/~baz/ abcd.efgh.mil, none.such/asdf/ hi.there.org'
-              => [[S => 'http://foo.bar.xx/~baz/'],
-                  [S => 'http://abcd.efgh.mil/'],
+              => [[S => 'http://abcd.efgh.mil/'],
                   [S => 'http://hi.there.org/']],
           'foo:<1.2.3.4>'
               => [[S => 'http://1.2.3.4/']],

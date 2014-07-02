@@ -764,7 +764,7 @@ sub top_level_domain_re {
         zw
     );
     
-    return qr/(?:[a-z\p{isAlpha}]{2}|$plain)/i;
+    return qr/(?:$plain)/i;
 }
 
 =head1 AUTHOR

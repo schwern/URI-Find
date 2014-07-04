@@ -24,7 +24,7 @@ provides:
 requires:
   URI: '1.00'
   URI::URL: '5.00'
-  perl: v5.6.0
+  perl: v5.8.9
 resources:
   bugtracker: http://github.com/schwern/URI-Find/issues/
   homepage: http://search.cpan.org/dist/URI-Find

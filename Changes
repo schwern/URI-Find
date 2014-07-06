@@ -1,3 +1,19 @@
+NEXT
+    New Features
+    * The "git" scheme is supported. (Schwern)
+
+    Backwards Incompatibilities
+    * Previously, URIs stringified to their canonical version.  Now
+      they stringify as written.  This results in less loss of
+      information.  For example.  "Blah HTTP:://FOO.COM" previously
+      would stringify as "http://foo.com/" and now it will stringify
+      as "HTTP://FOO.COM".  To restore the old behavior you can call
+      $uri->canonical. (Schwern)
+
+    Distribution Changes
+    * No longer using URI::URL. (Schwern)
+
+
 20140702  Wed Jul  2 13:41:47 PDT 2014
     New Features
     * IDNA (aka Unicode) domains are now supported. [github 3] (GwenDragon)

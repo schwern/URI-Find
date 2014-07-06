@@ -21,12 +21,10 @@ use URI::URL;
 
 require URI;
 
-### patch for IDNA domains
 my $reserved   = q(;/?:@&=+$,[]);
-my $mark       = q(-_.!~*'());                                    #'; emacs
+my $mark       = q(-_.!~*'());
 my $unreserved = "A-Za-z0-9\Q$mark\E";
-my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%"; # extend with Unicodeletter for IDNA
-###
+my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%";
 
 # URI scheme pattern without the non-alpha numerics.
 # Those are extremely uncommon and interfere with the match.

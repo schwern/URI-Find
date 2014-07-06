@@ -60,24 +60,24 @@ BEGIN {
     # HTTP URLs get a trailing slash, FTP and gopher do not.
     %Tests = (
           'Something something something.travel and stuff'
-              => [[ S => 'http://something.travel/' ]],
-          '<URL:http://www.perl.com>' => 'http://www.perl.com/',
+              => [[ S => 'http://something.travel' ]],
+          '<URL:http://www.perl.com>' => 'http://www.perl.com',
           '<ftp://ftp.site.org>'      => 'ftp://ftp.site.org',
           '<ftp.site.org>'            => [[ S => 'ftp://ftp.site.org' ]],
           'Make sure "http://www.foo.com" is caught' =>
-                'http://www.foo.com/',
-          'http://www.foo.com'  => 'http://www.foo.com/',
-          'www.foo.com'         => [[ S => 'http://www.foo.com/' ]],
+                'http://www.foo.com',
+          'http://www.foo.com'  => 'http://www.foo.com',
+          'www.foo.com'         => [[ S => 'http://www.foo.com' ]],
           'ftp.foo.com'         => [[ S => 'ftp://ftp.foo.com' ]],
           'gopher://moo.foo.com'        => 'gopher://moo.foo.com',
           'I saw this site, http://www.foo.com, and its really neat!'
-              => 'http://www.foo.com/',
+              => 'http://www.foo.com',
           'Foo Industries (at http://www.foo.com)'
-              => 'http://www.foo.com/',
+              => 'http://www.foo.com',
           'Oh, dear.  Another message from Dejanews.  http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25  How fun.'
               => 'http://www.deja.com/%5BST_rn=ps%5D/qs.xp?ST=PS&svcclass=dnyr&QRY=lwall&defaultOp=AND&DBS=1&OP=dnquery.xp&LNG=ALL&subjects=&groups=&authors=&fromdate=&todate=&showsort=score&maxhits=25',
           'Hmmm, Storyserver from news.com.  http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811  How nice.'
-             => [[S => 'http://news.com/'],
+             => [[S => 'http://news.com'],
                  [$all => 'http://news.cnet.com/news/0-1004-200-1537811.html?tag=st.ne.1002.thed.1004-200-1537811']],
           '$html = get("http://www.perl.com/");' => 'http://www.perl.com/',
           q|my $url = url('http://www.perl.com/cgi-bin/cpan_mod');|
@@ -85,51 +85,54 @@ BEGIN {
           'http://www.perl.org/support/online_support.html#mail'
               => 'http://www.perl.org/support/online_support.html#mail',
           'irc.lightning.net irc.mcs.net'
-              => [[S => 'http://irc.lightning.net/'],
-                  [S => 'http://irc.mcs.net/']],
+              => [[S => 'http://irc.lightning.net'],
+                  [S => 'http://irc.mcs.net']],
           'foo.bar.xx/~baz/' => [],
           'foo.bar.xx/~baz/ abcd.efgh.mil, none.such/asdf/ hi.there.org'
-              => [[S => 'http://abcd.efgh.mil/'],
-                  [S => 'http://hi.there.org/']],
+              => [[S => 'http://abcd.efgh.mil'],
+                  [S => 'http://hi.there.org']],
           'foo:<1.2.3.4>'
-              => [[S => 'http://1.2.3.4/']],
+              => [[S => 'http://1.2.3.4']],
           'mail.eserv.com.au?  failed before ? designated end'
-              => [[S => 'http://mail.eserv.com.au/']],
+              => [[S => 'http://mail.eserv.com.au']],
           'foo.info/himom ftp.bar.biz'
               => [[S => 'http://foo.info/himom'],
                   [S => 'ftp://ftp.bar.biz']],
-          '(http://round.com)'   => 'http://round.com/',
-          '[http://square.com]'  => 'http://square.com/',
-          '{http://brace.com}'   => 'http://brace.com/',
-          '<http://angle.com>'   => 'http://angle.com/',
-          '(round.com)'          => [[S => 'http://round.com/'  ]],
-          '[square.com]'         => [[S => 'http://square.com/' ]],
-          '{brace.com}'          => [[S => 'http://brace.com/'  ]],
-          '<angle.com>'          => [[S => 'http://angle.com/'  ]],
-          '<x>intag.com</x>'     => [[S => 'http://intag.com/'  ]],
+          '(http://round.com)'   => 'http://round.com',
+          '[http://square.com]'  => 'http://square.com',
+          '{http://brace.com}'   => 'http://brace.com',
+          '<http://angle.com>'   => 'http://angle.com',
+          '(round.com)'          => [[S => 'http://round.com'  ]],
+          '[square.com]'         => [[S => 'http://square.com' ]],
+          '{brace.com}'          => [[S => 'http://brace.com'  ]],
+          '<angle.com>'          => [[S => 'http://angle.com'  ]],
+          '<x>intag.com</x>'     => [[S => 'http://intag.com'  ]],
           '[mailto:somebody@company.ext]' => 'mailto:somebody@company.ext',
-          'HTtp://MIXED-Case.Com' => 'http://mixed-case.com/',
+          'HTtp://MIXED-Case.Com' => 'HTtp://MIXED-Case.Com',
           "The technology of magnetic energy has become so powerful an entire ".
           "house can...http://bit.ly/8yEdeb"
             => "http://bit.ly/8yEdeb",
           'http://www.foo.com/bar((baz)blah)' => 'http://www.foo.com/bar((baz)blah)',
-          'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]/',
-          '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]/',
+          'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]',
+          '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]',
+
+          'GwenDragon	git://github.com/GwenDragon/uri-find.git (fetch)'
+            => 'git://github.com/GwenDragon/uri-find.git',
 
           # Tests for IDNA domains
-          'http://müller.de' => 'http://xn--mller-kva.de/',
-          'http://موقع.وزارة-الاتصالات.مصر' => 'http://xn--4gbrim.xn----ymcbaaajlc6dj7bxne2c.xn--wgbh1c/',
-          'http://правительство.рф' => 'http://xn--80aealotwbjpid2k.xn--p1ai/',
-          'http://北京大学.中國' => 'http://xn--1lq90ic7fzpc.xn--fiqz9s/', 
-          'http://北京大学.cn' => 'http://xn--1lq90ic7fzpc.cn/',
+          'http://müller.de' => 'http://xn--mller-kva.de',
+          'http://موقع.وزارة-الاتصالات.مصر' => 'http://xn--4gbrim.xn----ymcbaaajlc6dj7bxne2c.xn--wgbh1c',
+          'http://правительство.рф' => 'http://xn--80aealotwbjpid2k.xn--p1ai',
+          'http://北京大学.中國' => 'http://xn--1lq90ic7fzpc.xn--fiqz9s', 
+          'http://北京大学.cn' => 'http://xn--1lq90ic7fzpc.cn',
 
           # Test new TLDs
-          'http://my.test.transport' => 'http://my.test.transport/',
-          'http://regierung.bayern' => 'http://regierung.bayern/',
+          'http://my.test.transport' => 'http://my.test.transport',
+          'http://regierung.bayern' => 'http://regierung.bayern',
           'http://kaiser-senf.gmbh/shop/' => 'http://kaiser-senf.gmbh/shop/',
           'Have vacation in lovely Bavaria and visit tourist.in.bayern to go to King Ludwig New Schwanstein. For political information see website regierung.bayern to get more.' 
-            => [[S => 'http://tourist.in.bayern/' ], [S => 'http://regierung.bayern/' ]],
-          'The mießlich-österlich-mück.ag was established in 2032 by M. Ostrich.' => [[S => 'http://xn--mielich-sterlich-mck-dwb52cye.ag/' ]],
+            => [[S => 'http://tourist.in.bayern' ], [S => 'http://regierung.bayern' ]],
+          'The mießlich-österlich-mück.ag was established in 2032 by M. Ostrich.' => [[S => 'http://xn--mielich-sterlich-mck-dwb52cye.ag' ]],
 
           # False tests
           'HTTP::Request::Common'                       => [],
@@ -213,14 +216,4 @@ sub run {
 
 while( my($text, $rspec_list) = each %Tests ) {
     run $text, @$rspec_list;
-}
-
-# We used to turn URI::URL strict on and leave it on.
-
-for my $val (0, 1) {
-    URI::URL::strict($val);
-    my $f = URI::Find->new(sub { });
-    my $t = "foo";
-    $f->find(\$t);
-    is $val, URI::URL::strict(), "URI::URL::strict $val";
 }

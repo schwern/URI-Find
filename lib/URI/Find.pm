@@ -17,7 +17,6 @@ use constant YES => (1==1);
 use constant NO  => !YES;
 
 use Carp        qw(croak);
-use URI::URL;
 
 require URI;
 
@@ -30,6 +29,9 @@ my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%";
 # Those are extremely uncommon and interfere with the match.
 my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9]*/;
 my($uricSet)  = $uric; # use new set
+
+# Some schemes which URI.pm does not explicitly support.
+my $extraSchemesRe = qr{^(?:git)$};
 
 # We need to avoid picking up 'HTTP::Request::Common' so we have a
 # subset of uric without a colon ("I have no colon and yet I must poop")
@@ -54,10 +56,10 @@ URI::Find - Find URIs in arbitrary text
 
 =head1 DESCRIPTION
 
-This module does one thing: Finds URIs and URLs in plain text.  It finds
-them quickly and it finds them B<all> (or what URI::URL considers a URI
-to be.)  It only finds URIs which include a scheme (http:// or the
-like), for something a bit less strict have a look at
+This module does one thing: Finds URIs and URLs in plain text.  It
+finds them quickly and it finds them B<all> (or what URI.pm considers
+a URI to be.)  It only finds URIs which include a scheme (http:// or
+the like), for something a bit less strict have a look at
 L<URI::Find::Schemeless|URI::Find::Schemeless>.
 
 For a command-line interface, L<urifind> is provided.
@@ -73,10 +75,9 @@ For a command-line interface, L<urifind> is provided.
 Creates a new URI::Find object.
 
 &callback is a function which is called on each URI found.  It is
-passed two arguments, the first is a URI::URL object representing the
-URI found.  The second is the original text of the URI found.  The
-return value of the callback will replace the original URI in the
-text.
+passed two arguments, the first is a URI object representing the URI
+found.  The second is the original text of the URI found.  The return
+value of the callback will replace the original URI in the text.
 
 =cut
 
@@ -125,7 +126,7 @@ sub find {
     $self->{_uris_found} = 0;
 
     # Yes, evil.  Basically, look for something vaguely resembling a URL,
-    # then hand it off to URI::URL for examination.  If it passes, throw
+    # then hand it off to URI for examination.  If it passes, throw
     # it to a callback and put the result in its place.
     local $SIG{__DIE__} = 'DEFAULT';
     my $uri_cand;
@@ -519,15 +520,12 @@ sub _is_uri {
       $uri =~ $self->schemeless_uri_re   and
       $uri !~ /^<?$schemeRe:/;
 
-    # Set strict to avoid bogus schemes
-    my $old_strict = URI::URL::strict(1);
-
     eval {
-        $uri = URI::URL->new($uri);
-    };
+        $uri = URI->new($uri);
 
-    # And restore it
-    URI::URL::strict($old_strict);
+        # Throw out anything with an invalid scheme.
+        undef $uri if $uri->isa("URI::_foreign") && $uri->scheme !~ $extraSchemesRe;
+    };
 
     if($@ || !defined $uri) {   # leave everything untouched, its not a URI.
         return NO;
@@ -566,8 +564,7 @@ See F<http://www.perlfoundation.org/artistic_license_1_0>
 
 =head1 SEE ALSO
 
-L<urifind>, L<URI::Find::Schemeless>, L<URI::URL>, L<URI>,
-RFC 3986 Appendix C
+L<urifind>, L<URI::Find::Schemeless>, L<URI>, RFC 3986 Appendix C
 
 =cut
 

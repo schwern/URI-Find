@@ -11,14 +11,11 @@ our $VERSION = 20140702;
 
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);
-use IO::File;
 use URI::Find;
 
 # What to do, and how
 my $help = 0;
 my $version = 0;
-my $sort = 0;
-my $reverse = 0;
 my $unique = 0;
 my $prefix = 0;
 my $noprefix = 0;
@@ -27,11 +24,9 @@ my @schemes = ();
 my $dump = 0;
 
 Getopt::Long::Configure(qw{no_ignore_case bundling});
-GetOptions('s!'   => \$sort,
-           'u!'   => \$unique,
+GetOptions('u!'   => \$unique,
            'p!'   => \$prefix,
            'n!'   => \$noprefix,
-           'r!'   => \$reverse,
            'h!'   => \$help,
            'v!'   => \$version,
            'd!'   => sub { $dump = 1 },
@@ -50,8 +45,6 @@ $prog - find URIs in a document and dump them to STDOUT.
 
 Options:
 
-    -s          Sort results.
-    -r          Reverse sort results (implies -s).
     -u          Return unique results only.
     -n          Don't include filename in output.
     -p          Include filename in output (0 by default, but 1 if
@@ -72,9 +65,6 @@ HELP
 
     exit(0);
 }
-
-my (@uris, $count);
-unshift @ARGV, \*STDIN unless @ARGV;
 
 if (($prefix + $noprefix) > 1) {
     my $prog = basename $0;
@@ -105,57 +95,29 @@ if ($dump) {
 }
 
 # Find the URIs
-for my $argv (@ARGV) {
-    my ($name, $fh, $data);
+my %seen;
+my $finder = URI::Find->new(
+    sub {
+        my ($uri) = @_;
 
-    $argv = \*STDIN if ($argv eq '-');
+        # Apply patterns, in @pats
+        return '' if grep { $uri !~ /$_/ } @pats;
 
-    if (ref $argv eq 'GLOB') {
-        local $/;
-        $data = <$argv>;
-        $name = '<stdin>'
+        # Remove redundant links
+        return '' if $unique && $seen{$uri}++;
+
+        if ($prefix) {
+            $uri = ($ARGV eq '-' ? '<stdin>' : $ARGV) . ": $uri";
+        }
+
+        print $uri, "\n";
     }
-    else {
-        local $/;
-        $fh = IO::File->new($argv) or die "Can't open $argv: $!";
-        $data = <$fh>;
-        $name = $argv;
-    }
-
-    my $finder = URI::Find->new(sub { push @uris => [ $name, $_[0] ] });
-    $finder->find(\$data);
+);
+$| = 1;
+while (my $line = readline) {
+    $finder->find(\$line);
 }
 
-# Apply patterns, in @pats
-for my $pat (@pats) {
-    @uris = grep { $_->[1] =~ /$pat/ } @uris;
-}
-
-# Remove redundant links
-if ($unique) {
-    my %unique;
-    @uris = grep { ++$unique{$_->[1]} == 1 } @uris;
-}
-
-# Sort links, possibly in reverse
-if ($sort || $reverse) {
-    if ($reverse) {
-        @uris = sort { $b->[1] cmp $a->[1] } @uris;
-    }
-    else {
-        @uris = sort { $a->[1] cmp $b->[1] } @uris;
-    }
-}
-
-# Flatten the arrayrefs
-if ($prefix) {
-    @uris = map { join ': ' => @$_ } @uris;
-}
-else {
-    @uris = map { $_->[1] } @uris;
-}
-
-print map { "$_\n" } @uris;
 
 exit 0;
 
@@ -206,20 +168,6 @@ prefix") switch:
     http://www.boston.com/index.html
     http://use.perl.org/
 
-By default, URIs will be displayed in the order found; to sort them
-ascii-betically, use the C<-s> ("sort") option.  To reverse sort them,
-use the C<-r> ("reverse") flag (C<-r> implies C<-s>).
-
-    $ urifind -s file1 file2
-    http://use.perl.org/
-    http://www.boston.com/index.html
-    mailto:webmaster@boston.com
-
-    $ urifind -r file1 file2
-    mailto:webmaster@boston.com
-    http://www.boston.com/index.html
-    http://use.perl.org/
-
 Finally, F<urifind> supports limiting the returned URIs by scheme or
 by arbitrary pattern, using the C<-S> option (for schemes) and the
 C<-P> option.  Both C<-S> and C<-P> can be specified multiple times:
@@ -253,14 +201,6 @@ switch.
 =head1 OPTION SUMMARY
 
 =over 4
-
-=item -s
-
-Sort results.
-
-=item -r
-
-Reverse sort results (implies -s).
 
 =item -u
 

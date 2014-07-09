@@ -1,6 +1,7 @@
 NEXT
     New Features
     * The "git" scheme is supported. (Schwern)
+    * svn, ssh and svn+ssh schemes are supported. [rt.cpan.org 57490] (Schwern)
 
     Backwards Incompatibilities
     * Previously, URIs stringified to their canonical version.  Now
@@ -12,6 +13,7 @@ NEXT
 
     Distribution Changes
     * No longer using URI::URL. (Schwern)
+    * Now requires URI 1.60 for Unicode support. (Schwern)
 
 
 20140702  Wed Jul  2 13:41:47 PDT 2014

@@ -27,11 +27,11 @@ my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%";
 
 # URI scheme pattern without the non-alpha numerics.
 # Those are extremely uncommon and interfere with the match.
-my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9]*/;
+my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9\+]*/;
 my($uricSet)  = $uric; # use new set
 
 # Some schemes which URI.pm does not explicitly support.
-my $extraSchemesRe = qr{^(?:git)$};
+my $extraSchemesRe = qr{^(?:git|svn|ssh|svn\+ssh)$};
 
 # We need to avoid picking up 'HTTP::Request::Common' so we have a
 # subset of uric without a colon ("I have no colon and yet I must poop")

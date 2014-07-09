@@ -114,8 +114,13 @@ BEGIN {
           'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]',
           '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]',
 
+          # Tests for git domains
           'GwenDragon	git://github.com/GwenDragon/uri-find.git (fetch)'
             => 'git://github.com/GwenDragon/uri-find.git',
+
+          # Tests for SVN+SSH domains
+          "URLs like svn+ssh://example.net aren't found"
+            => 'svn+ssh://example.net',
 
           # Tests for IDNA domains
           'http://müller.de' => 'http://xn--mller-kva.de',
@@ -143,6 +148,7 @@ BEGIN {
           'x comp.ai.nat-lang libdb.so.3 x'             => [],
           'x comp.ai.nat-lang libdb.so.3 x'             => [],
           'www.marselisl www.info@skive-hallerne.dk'    => [],
+          'bogusscheme://foo.com/'                      => [],
 # XXX broken
 #         q{$url = 'http://'.rand(1000000).'@anonymizer.com/'.$url;}
 #                                                       => [],

@@ -524,7 +524,13 @@ sub _is_uri {
         $uri = URI->new($uri);
 
         # Throw out anything with an invalid scheme.
-        undef $uri if $uri->isa("URI::_foreign") && $uri->scheme !~ $extraSchemesRe;
+        my $has_invalid_scheme = $uri->isa("URI::_foreign") &&
+                                 $uri->scheme !~ $extraSchemesRe;
+
+        # Toss out things like http:// but keep file:///
+        my $is_empty = $uri =~ m{^$schemeRe://$};
+
+        undef $uri if $has_invalid_scheme || $is_empty;
     };
 
     if($@ || !defined $uri) {   # leave everything untouched, its not a URI.

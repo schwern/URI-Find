@@ -3,6 +3,9 @@ NEXT
     * The "git" scheme is supported. (Schwern)
     * svn, ssh and svn+ssh schemes are supported. [rt.cpan.org 57490] (Schwern)
 
+    Bug Fixes
+    * http:// is no longer matched [rt.cpan.org 63283] (Schwern)
+
     Backwards Incompatibilities
     * Previously, URIs stringified to their canonical version.  Now
       they stringify as written.  This results in less loss of

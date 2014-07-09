@@ -114,11 +114,17 @@ BEGIN {
           'https://[2607:5300:60:1509::228d:413a]'      => 'https://[2607:5300:60:1509::228d:413a]',
           '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]',
 
-          # Tests for git domains
+          # Tests for file:
+          "origin	file:///Users/schwern/devel/URI-Find/ (fetch)"
+            => 'file:///Users/schwern/devel/URI-Find/',
+          "This is how you express the root path file:/// as a URL"
+            => 'file:///',
+
+          # Tests for git:
           'GwenDragon	git://github.com/GwenDragon/uri-find.git (fetch)'
             => 'git://github.com/GwenDragon/uri-find.git',
 
-          # Tests for SVN+SSH domains
+          # Tests for svn+ssh:
           "URLs like svn+ssh://example.net aren't found"
             => 'svn+ssh://example.net',
 
@@ -149,6 +155,8 @@ BEGIN {
           'x comp.ai.nat-lang libdb.so.3 x'             => [],
           'www.marselisl www.info@skive-hallerne.dk'    => [],
           'bogusscheme://foo.com/'                      => [],
+          'http:'                                       => [],
+          'http://'                                     => [],
 # XXX broken
 #         q{$url = 'http://'.rand(1000000).'@anonymizer.com/'.$url;}
 #                                                       => [],

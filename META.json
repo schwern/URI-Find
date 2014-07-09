@@ -35,11 +35,11 @@
    "provides" : {
       "URI::Find" : {
          "file" : "lib/URI/Find.pm",
-         "version" : "20140702"
+         "version" : "20140709"
       },
       "URI::Find::Schemeless" : {
          "file" : "lib/URI/Find/Schemeless.pm",
-         "version" : "20140702"
+         "version" : "20140709"
       }
    },
    "release_status" : "stable",
@@ -55,5 +55,5 @@
          "url" : "http://github.com/schwern/URI-Find/"
       }
    },
-   "version" : "20140702"
+   "version" : "20140709"
 }

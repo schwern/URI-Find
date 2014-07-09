@@ -17,10 +17,10 @@ name: URI-Find
 provides:
   URI::Find:
     file: lib/URI/Find.pm
-    version: '20140702'
+    version: '20140709'
   URI::Find::Schemeless:
     file: lib/URI/Find/Schemeless.pm
-    version: '20140702'
+    version: '20140709'
 requires:
   URI: '1.60'
   perl: v5.8.9
@@ -29,4 +29,4 @@ resources:
   homepage: http://search.cpan.org/dist/URI-Find
   license: http://dev.perl.org/licenses/
   repository: http://github.com/schwern/URI-Find/
-version: '20140702'
+version: '20140709'

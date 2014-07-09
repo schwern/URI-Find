@@ -22,7 +22,7 @@ Please also read the perlmodinstall man page, if available.
 
 WHAT VERSION OF PERL DO I NEED?
 
-        perl 5.6.0 or higher
+        perl 5.8.9 or higher
 
 
 WHAT MODULES DO I NEED?
@@ -30,11 +30,10 @@ WHAT MODULES DO I NEED?
 To build, test and install the module you need:
 
         Module::Build   0.30 or higher
-        Test::More      0.82 or higher
+        Test::More      0.88 or higher
 
 To run the module you need:
 
-        URI.pm          1.00 or higher
-        URI::URL        5.00 or higher
+        URI             1.60 or higher
 
 They can all be found on http://search.cpan.org/ or by running your CPAN shell.

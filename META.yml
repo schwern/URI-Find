@@ -22,8 +22,7 @@ provides:
     file: lib/URI/Find/Schemeless.pm
     version: '20140702'
 requires:
-  URI: '1.00'
-  URI::URL: '5.00'
+  URI: '1.60'
   perl: v5.8.9
 resources:
   bugtracker: http://github.com/schwern/URI-Find/issues/

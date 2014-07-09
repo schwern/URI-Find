@@ -18,7 +18,7 @@ my $build = Module::Build->new(
 
     requires            => {
         perl            => '5.8.9',
-        URI             => '1.00',
+        URI             => '1.60',
     },
 
     license             => 'perl',

@@ -13,6 +13,7 @@ use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);
 use IO::File;
 use URI::Find;
+use URI::Find::Schemeless;
 
 # What to do, and how
 my $help = 0;
@@ -25,19 +26,23 @@ my $noprefix = 0;
 my @pats = ();
 my @schemes = ();
 my $dump = 0;
+my $schemeless = 0;
 
 Getopt::Long::Configure(qw{no_ignore_case bundling});
-GetOptions('s!'   => \$sort,
-           'u!'   => \$unique,
-           'p!'   => \$prefix,
-           'n!'   => \$noprefix,
-           'r!'   => \$reverse,
-           'h!'   => \$help,
-           'v!'   => \$version,
-           'd!'   => sub { $dump = 1 },
-           'D!'   => sub { $dump = 2 },
-           'P=s@' => \@pats,
-           'S=s@' => \@schemes);
+GetOptions(
+    's!'   => \$sort,
+    'u!'   => \$unique,
+    'p!'   => \$prefix,
+    'n!'   => \$noprefix,
+    'r!'   => \$reverse,
+    'h!'   => \$help,
+    'v!'   => \$version,
+    'd!'   => sub { $dump = 1 },
+    'D!'   => sub { $dump = 2 },
+    'P=s@' => \@pats,
+    'S=s@' => \@schemes,
+    'schemeless!' => \$schemeless,
+);
 
 if ($help || $version) {
     my $prog = basename($0);
@@ -122,7 +127,8 @@ for my $argv (@ARGV) {
         $name = $argv;
     }
 
-    my $finder = URI::Find->new(sub { push @uris => [ $name, $_[0] ] });
+    my $class = $schemeless ? "URI::Find::Schemeless" : "URI::Find";
+    my $finder = $class->new(sub { push @uris => [ $name, $_[0] ] });
     $finder->find(\$data);
 }
 

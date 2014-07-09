@@ -2,6 +2,7 @@ NEXT
     New Features
     * The "git" scheme is supported. (Schwern)
     * svn, ssh and svn+ssh schemes are supported. [rt.cpan.org 57490] (Schwern)
+    * Added a --schemeless option to urifind. (Schwern)
 
     Bug Fixes
     * http:// is no longer matched [rt.cpan.org 63283] (Schwern)

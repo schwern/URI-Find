@@ -5,8 +5,6 @@ use strict;
 use Test::More;
 use File::Spec;
 
-plan tests => 13;
-
 ok(my $ifile = File::Spec->catfile(qw(t urifind sciencenews)),
     "Test file found");
 my $urifind = File::Spec->catfile(qw(blib script urifind));
@@ -42,3 +40,28 @@ is(@data, 13, "Correct number elements when given data on STDIN");
 
 @data = `$^X $urifind -S http -P \.org $ifile`;
 is(@data, 8, "Correct number elements when invoked with -P \.org -S http");
+
+@data = `$^X $urifind --schemeless $ifile`;
+chomp @data;
+is_deeply \@data, [map { "$_" } qw(
+    http://66.33.90.123
+    http://efwd.dnsix.com
+    mailto:eletter@lists.sciencenews.org
+    mailto:eletter-help@lists.sciencenews.org
+    mailto:eletter-unsubscribe@lists.sciencenews.org
+    mailto:eletter-subscribe@lists.sciencenews.org
+    http://www.sciencenews.org
+    http://www.sciencenews.org/20030705/fob1.asp
+    http://www.sciencenews.org/20030705/fob5.asp
+    http://www.sciencenews.org/20030705/bob8.asp
+    http://www.sciencenews.org/20030705/mathtrek.asp
+    http://www.sciencenews.org/20030705/food.asp
+    http://www.sciencenews.org
+    http://www.sciencenews.org/20030705/toc.asp
+    http://www.sciencenews.org
+    http://www.sciencenews.org/20030705/fob2.asp
+    http://www.sciencenews.org/20030705/fob3.asp
+    http:/%
+)];
+
+done_testing;

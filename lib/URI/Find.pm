@@ -7,6 +7,7 @@ package URI::Find;
 require 5.006;
 
 use strict;
+use warnings;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
 

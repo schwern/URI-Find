@@ -13,7 +13,7 @@ use base qw(URI::Find);
 use URI::Find ();
 
 use vars qw($VERSION);
-$VERSION = 20140709;
+$VERSION = 20160806;
 
 my($dnsSet) = '\p{isAlpha}A-Za-z0-9-'; # extended for IDNA domains
 

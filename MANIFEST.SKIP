@@ -63,3 +63,5 @@
 \.diff$
 
 ^reference/
+
+^URI-Find-

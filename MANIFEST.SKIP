@@ -62,6 +62,4 @@
 \.patch$
 \.diff$
 
-
-# Don't ship the Travis config.
-^\.travis\.yml$
+^reference/

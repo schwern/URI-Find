@@ -27,13 +27,16 @@ my $build = Module::Build->new(
 
     meta_merge => {
         resources => {
-            homepage        => 'http://search.cpan.org/dist/URI-Find',
+            homepage        => 'http://metacpan.org/release/URI-Find',
             bugtracker      => 'http://github.com/schwern/URI-Find/issues/',
             repository      => 'http://github.com/schwern/URI-Find/',
         }
     },
 
     recursive_test_files        => 1,
+
+    create_readme               => 1,
+    create_license              => 1,
 );
 
 $build->create_build_script;

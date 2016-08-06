@@ -4,7 +4,7 @@
       "Michael G Schwern <schwern@pobox.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4205",
+   "generated_by" : "Module::Build version 0.4218",
    "license" : [
       "perl_5"
    ],
@@ -28,7 +28,7 @@
       "runtime" : {
          "requires" : {
             "URI" : "1.60",
-            "perl" : "v5.8.9"
+            "perl" : "v5.8.8"
          }
       }
    },
@@ -47,7 +47,7 @@
       "bugtracker" : {
          "web" : "http://github.com/schwern/URI-Find/issues/"
       },
-      "homepage" : "http://search.cpan.org/dist/URI-Find",
+      "homepage" : "http://metacpan.org/release/URI-Find",
       "license" : [
          "http://dev.perl.org/licenses/"
       ],
@@ -55,5 +55,6 @@
          "url" : "http://github.com/schwern/URI-Find/"
       }
    },
-   "version" : "20140709"
+   "version" : "20140709",
+   "x_serialization_backend" : "JSON::PP version 2.27203"
 }

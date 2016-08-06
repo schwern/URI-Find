@@ -17,7 +17,7 @@ my $build = Module::Build->new(
     },
 
     requires            => {
-        perl            => '5.8.9',
+        perl            => '5.8.8',
         URI             => '1.60',
     },
 

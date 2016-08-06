@@ -215,7 +215,8 @@ AUTHOR
 
 LICENSE
 
-    Copyright 2000, 2009-2010 by Michael G Schwern <schwern@pobox.com>.
+    Copyright 2000, 2009-2010, 2014, 2016 by Michael G Schwern
+    <schwern@pobox.com>.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.

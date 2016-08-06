@@ -1,7 +1,3 @@
-# Copyright (c) 2000, 2009 Michael G. Schwern.  All rights reserved.
-# This program is free software; you can redistribute it and/or modify
-# it under the same terms as Perl itself.
-
 package URI::Find;
 
 require 5.006;
@@ -562,7 +558,7 @@ Darren Chamberlain wrote urifind.
 
 =head1 LICENSE
 
-Copyright 2000, 2009-2010 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
+Copyright 2000, 2009-2010, 2014, 2016 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
 
 This program is free software; you can redistribute it and/or 
 modify it under the same terms as Perl itself.

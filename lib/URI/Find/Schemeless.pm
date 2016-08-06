@@ -5,6 +5,7 @@
 package URI::Find::Schemeless;
 
 use strict;
+use warnings;
 use base qw(URI::Find);
 
 # base.pm error in 5.005_03 prevents it from loading URI::Find if I'm

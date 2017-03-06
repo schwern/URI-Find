@@ -30,6 +30,7 @@ my @tasks = (
 
   # Non-URL nested inside brackets
   [q{<a href="foo://example&.com">}, q{<a href="foo://example&amp;.com">}],
+  [q{ http:\/example.com }, q{ http:\/example.com }],
 );
 
 for my $task (@tasks) {

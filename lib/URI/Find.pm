@@ -338,11 +338,11 @@ sub decruft {
             $cruft =~ s/^;//;
         }
 
-		my $compare = sub { index( $orig_cruft, $_[ 1 ] )
-						<=> index( $orig_cruft, $_[ 0 ] ) };
+        my $compare = sub { index( $orig_cruft, $_[ 1 ] )
+                        <=> index( $orig_cruft, $_[ 0 ] ) };
 
-		for my $open (sort { $compare->( $a, $b ) } keys %balanced_cruft) {
-			my $close = $balanced_cruft{ $open };
+        for my $open (sort { $compare->( $a, $b ) } keys %balanced_cruft) {
+            my $close = $balanced_cruft{ $open };
 
             $self->recruft_balanced(\$orig_match, \$cruft, $open, $close);
         }
@@ -361,12 +361,12 @@ sub recruft_balanced {
     my $open_count  = () = $$orig_match =~ m{\Q$open}g;
     my $close_count = () = $$orig_match =~ m{\Q$close}g;
 
-	$open eq $close and $open_count and $open_count == $close_count
-		and $open_count % 2 > 0 and $close_count--;
+    $open eq $close and $open_count and $open_count == $close_count
+        and $open_count % 2 > 0 and $close_count--;
 
     if ($$cruft =~ m{ \A \Q$close\E }mx && $open_count == ($close_count + 1) ) {
-		$$orig_match .= $close;
-		$$cruft =~ s{ \A \Q$close\E }{}mx;
+        $$orig_match .= $close;
+        $$cruft =~ s{ \A \Q$close\E }{}mx;
     }
 
     return;

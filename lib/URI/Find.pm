@@ -331,13 +331,19 @@ sub decruft {
     if( $orig_match =~ s/([\Q$cruftSet\E]+)$// ) {
         # urls can end with HTML entities if found in HTML so let's put back semicolons
         # if this looks like the case
-        my $cruft = $1;
+        my $cruft = my $orig_cruft = $1;
+
         if( $cruft =~ /^;/ && $orig_match =~ /\&(\#[1-9]\d{1,3}|[a-zA-Z]{2,8})$/) {
             $orig_match .= ';';
             $cruft =~ s/^;//;
         }
 
-        while( my($open, $close) = each %balanced_cruft ) {
+		my $compare = sub { index( $orig_cruft, $_[ 1 ] )
+						<=> index( $orig_cruft, $_[ 0 ] ) };
+
+		for my $open (sort { $compare->( $a, $b ) } keys %balanced_cruft) {
+			my $close = $balanced_cruft{ $open };
+
             $self->recruft_balanced(\$orig_match, \$cruft, $open, $close);
         }
 
@@ -355,9 +361,12 @@ sub recruft_balanced {
     my $open_count  = () = $$orig_match =~ m{\Q$open}g;
     my $close_count = () = $$orig_match =~ m{\Q$close}g;
 
-    if ( $$cruft =~ /\Q$close\E$/ && $open_count == ( $close_count + 1 ) ) {
-        $$orig_match .= $close;
-        $$cruft =~ s/\Q$close\E$//;
+	$open eq $close and $open_count and $open_count == $close_count
+		and $open_count % 2 > 0 and $close_count--;
+
+    if ($$cruft =~ m{ \A \Q$close\E }mx && $open_count == ($close_count + 1) ) {
+		$$orig_match .= $close;
+		$$cruft =~ s{ \A \Q$close\E }{}mx;
     }
 
     return;

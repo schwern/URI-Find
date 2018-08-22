@@ -7,7 +7,7 @@
 
 use strict;
 
-our $VERSION = 20160806;
+our $VERSION = 20160822;
 
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);
@@ -55,19 +55,20 @@ $prog - find URIs in a document and dump them to STDOUT.
 
 Options:
 
-    -s          Sort results.
-    -r          Reverse sort results (implies -s).
-    -u          Return unique results only.
-    -n          Don't include filename in output.
-    -p          Include filename in output (0 by default, but 1 if
-                multiple files are included on the command line).
-    -P \$re      Print only lines matching regex '\$re' 
-                (may be specified multiple times).
-    -S \$scheme  Only this scheme (may be specified multiple times).
-    -h          This help screen.
-    -v          Display version and exit.
-    -d          Dump compiled regexes and continue.
-    -D          Dump compiled regexes and exit.
+    -s           Sort results.
+    -r           Reverse sort results (implies -s).
+    -u           Return unique results only.
+    -n           Don't include filename in output.
+    -p           Include filename in output (0 by default, but 1 if
+                 multiple files are included on the command line).
+    -P \$re       Print only lines matching regex '\$re' 
+                 (may be specified multiple times).
+    -S \$scheme   Only this scheme (may be specified multiple times).
+    -h           This help screen.
+    -v           Display version and exit.
+    -d           Dump compiled regexes and continue.
+    -D           Dump compiled regexes and exit.
+    --schemeless Find schemeless URIs.
 
 HELP
     }
@@ -304,6 +305,10 @@ Dump compiled regexes for C<-S> and C<-P> to C<STDERR>.
 =item -D
 
 Same as C<-d>, but exit after dumping.
+
+=item --schemeless
+
+Find schemeless URIs.
 
 =back
 

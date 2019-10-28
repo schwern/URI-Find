@@ -33,7 +33,7 @@ my $extraSchemesRe = qr{^(?:git|svn|ssh|svn\+ssh)$};
 # We need to avoid picking up 'HTTP::Request::Common' so we have a
 # subset of uric without a colon ("I have no colon and yet I must poop")
 my($uricCheat) = __PACKAGE__->uric_set;
-$uricCheat =~ tr/://d;
+$uricCheat =~ s{ \\ \: }{}mx; # Issue #17
 
 # Identifying characters accidentally picked up with a URI.
 my($cruftSet) = q{])\},.'";}; #'#

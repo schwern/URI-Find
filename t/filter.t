@@ -30,6 +30,10 @@ my @tasks = (
 
   # Non-URL nested inside brackets
   [q{<a href="foo://example&.com">}, q{<a href="foo://example&amp;.com">}],
+  # Does not reorder the fencepost cruft. Issue #12
+  [q{e:('')}, q{e:('')}],
+  [q{ Supporter Number:[*data('1.supporter_number')|html*] },
+   q{ Supporter Number:[*data('1.supporter_number')|html*] }],
 );
 
 for my $task (@tasks) {

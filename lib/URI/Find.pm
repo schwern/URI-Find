@@ -22,9 +22,9 @@ my $mark       = q(-_.!~*'());
 my $unreserved = "A-Za-z0-9\Q$mark\E";
 my $uric       = quotemeta($reserved) . '\p{isAlpha}' . $unreserved . "%";
 
-# URI scheme pattern without the non-alpha numerics.
+# URI scheme pattern without the non-alpha numerics or when very long.
 # Those are extremely uncommon and interfere with the match.
-my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9\+]*/;
+my($schemeRe) = qr/[a-zA-Z][a-zA-Z0-9\+]{0,16}/;
 my($uricSet)  = $uric; # use new set
 
 # Some schemes which URI.pm does not explicitly support.

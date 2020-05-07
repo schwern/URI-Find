@@ -61,7 +61,7 @@ sub schemeless_uri_re {
               # false match of "Lite.pm" via "MIME/Lite.pm".
               (?: ^ | (?<=[\s<>()\{\}\[\]]) )
               # hostname
-              (?: [$dnsSet]+(?:\.[$dnsSet]+)*\.$tldRe
+              (?: [$dnsSet]{1,63}(?:\.[$dnsSet]{1,63}){0,126}\.$tldRe
                   | (?:\d{1,3}\.){3}\d{1,3} ) # not inet_aton() complete
               (?:
                   (?=[\s\Q$cruftSet\E]) # followed by unrelated thing

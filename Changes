@@ -1,3 +1,10 @@
+    Bug Fixes
+    * URI first character matching. Trailing backslash in uricCheat
+      caused schemed URIs to go unmatched. (israelcb, lazarus) [github 17]
+    * Trailing punctuation right after a URI is now passed through
+      escape_func like the rest of the surrounding text, instead of
+      being appended raw. (israelcb, mephinet) [github 11]
+
 20160806  Sat Aug  6 13:36:14 PDT 2016
     Distribution
     * Homepage is now metacpan

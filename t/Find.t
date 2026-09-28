@@ -115,13 +115,13 @@ BEGIN {
           '[https://[2607:5300:60:1509::228d:413a]]'    => 'https://[2607:5300:60:1509::228d:413a]',
 
           # Tests for file:
-          "origin	file:///Users/schwern/devel/URI-Find/ (fetch)"
+          "origin\tfile:///Users/schwern/devel/URI-Find/ (fetch)"
             => 'file:///Users/schwern/devel/URI-Find/',
           "This is how you express the root path file:/// as a URL"
             => 'file:///',
 
           # Tests for git:
-          'GwenDragon	git://github.com/GwenDragon/uri-find.git (fetch)'
+          "GwenDragon\tgit://github.com/GwenDragon/uri-find.git (fetch)"
             => 'git://github.com/GwenDragon/uri-find.git',
 
           # Tests for svn+ssh:
